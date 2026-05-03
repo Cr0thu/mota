@@ -1,0 +1,57 @@
+id,title,year,topic,url,status
+P001,Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm,2017,AlphaZero,https://arxiv.org/abs/1712.01815,local_pdf_exists
+P002,Mastering the Game of Go without Human Knowledge,2017,AlphaGo Zero,https://www.nature.com/articles/nature24270,url_recorded
+P003,Mastering Atari with Deep Reinforcement Learning,2013,DQN,https://arxiv.org/abs/1312.5602,url_recorded
+P004,Human-level Control through Deep Reinforcement Learning,2015,DQN,https://www.nature.com/articles/nature14236,url_recorded
+P005,Deep Reinforcement Learning with Double Q-learning,2015,Double DQN,https://arxiv.org/abs/1509.06461,url_recorded
+P006,Dueling Network Architectures for Deep Reinforcement Learning,2015,Dueling DQN,https://arxiv.org/abs/1511.06581,url_recorded
+P007,Prioritized Experience Replay,2015,Replay,https://arxiv.org/abs/1511.05952,url_recorded
+P008,Noisy Networks for Exploration,2017,Exploration,https://arxiv.org/abs/1706.10295,url_recorded
+P009,A Distributional Perspective on Reinforcement Learning,2017,C51,https://arxiv.org/abs/1707.06887,url_recorded
+P010,Rainbow Combining Improvements in Deep Reinforcement Learning,2017,Rainbow,https://arxiv.org/abs/1710.02298,url_recorded
+P011,Beyond the Rainbow High Performance Deep Reinforcement Learning on a Desktop PC,2024,BTR,https://arxiv.org/abs/2411.03820,url_recorded
+P012,Mastering Atari Go Chess and Shogi by Planning with a Learned Model,2019,MuZero,https://arxiv.org/abs/1911.08265,url_recorded
+P013,Learning and Planning in Complex Action Spaces,2021,Sampled MuZero,https://arxiv.org/abs/2104.06303,url_recorded
+P014,Policy Improvement by Planning with Gumbel,2021,Gumbel MuZero,https://arxiv.org/abs/2111.03157,url_recorded
+P015,EfficientZero Mastering Atari Games with Limited Data,2021,EfficientZero,https://arxiv.org/abs/2111.00210,url_recorded
+P016,UniZero Generalized and Efficient Planning with Scalable Latent World Models,2024,UniZero,https://arxiv.org/abs/2406.10667,url_recorded
+P017,Thinker Learning to Plan and Act,2023,Thinker,https://arxiv.org/abs/2307.14993,url_recorded
+P018,Learning to Search with MCTSnets,2018,MCTSnet,https://arxiv.org/abs/1802.04697,url_recorded
+P019,World Models,2018,World Model,https://arxiv.org/abs/1803.10122,url_recorded
+P020,Learning Latent Dynamics for Planning from Pixels,2018,PlaNet,https://arxiv.org/abs/1811.04551,url_recorded
+P021,Dream to Control Learning Behaviors by Latent Imagination,2019,Dreamer,https://arxiv.org/abs/1912.01603,url_recorded
+P022,Mastering Atari with Discrete World Models,2020,DreamerV2,https://arxiv.org/abs/2010.02193,url_recorded
+P023,Mastering Diverse Domains through World Models,2023,DreamerV3,https://arxiv.org/abs/2301.04104,url_recorded
+P024,Planning to Explore via Self-Supervised World Models,2020,Plan2Explore,https://arxiv.org/abs/2005.05960,url_recorded
+P025,Exploration by Random Network Distillation,2018,RND,https://arxiv.org/abs/1810.12894,url_recorded
+P026,Curiosity-driven Exploration by Self-supervised Prediction,2017,ICM,https://arxiv.org/abs/1705.05363,url_recorded
+P027,First Return Then Explore,2020,Go-Explore,https://arxiv.org/abs/2004.12919,url_recorded
+P028,Never Give Up Learning Directed Exploration Strategies,2020,NGU,https://arxiv.org/abs/2002.06038,url_recorded
+P029,Between MDPs and Semi-MDPs A Framework for Temporal Abstraction,1999,Options,https://www.sciencedirect.com/science/article/pii/S0004370299000521,url_recorded
+P030,Hierarchical Reinforcement Learning with the MAXQ Value Function Decomposition,2000,MAXQ,https://arxiv.org/abs/cs/9905014,url_recorded
+P031,FeUdal Networks for Hierarchical Reinforcement Learning,2017,Feudal RL,https://arxiv.org/abs/1703.01161,url_recorded
+P032,The Option-Critic Architecture,2016,Option-Critic,https://arxiv.org/abs/1609.05140,url_recorded
+P033,Data-Efficient Hierarchical Reinforcement Learning,2018,HIRO,https://arxiv.org/abs/1805.08296,url_recorded
+P034,Learning Multi-Level Hierarchies with Hindsight,2017,HAC,https://arxiv.org/abs/1712.00948,url_recorded
+P035,Hindsight Experience Replay,2017,HER,https://arxiv.org/abs/1707.01495,url_recorded
+P036,Solving Sokoban using Hierarchical Reinforcement Learning with Landmarks,2025,HalfWeg,https://arxiv.org/abs/2504.04366,url_recorded
+P037,SEADS Symbolic Effect-Aware Diverse Skills,2022,Skills,https://openreview.net/forum?id=F4fX9P3wP2,url_recorded
+P038,SOKOBAN and Other Motion Planning Problems,1999,Complexity,https://www.ic.unicamp.br/~santiago/assets/mc558/2024%20-%202%20-%20projects/sokoban%20and%20other%20motion%20plannig%20problems.pdf,url_recorded
+P039,The NetHack Learning Environment,2020,NLE,https://arxiv.org/abs/2006.13760,url_recorded
+P040,MiniHack The Planet of the Apps,2021,MiniHack,https://arxiv.org/abs/2109.13202,url_recorded
+P041,Dungeons and Data A Large-Scale NetHack Dataset,2022,NLE Dataset,https://arxiv.org/abs/2211.00539,url_recorded
+P042,StarCraft II A New Challenge for Reinforcement Learning,2017,SC2LE,https://arxiv.org/abs/1708.04782,url_recorded
+P043,Boxoban A Procedurally Generated Sokoban Benchmark,2019,Sokoban,https://github.com/deepmind/boxoban-levels,url_recorded
+P044,An Investigation of Model-Free Planning in Boxoban,2020,DRC,https://arxiv.org/abs/2007.08463,url_recorded
+P045,Beyond A Better Planning with Transformers via Search Dynamics Bootstrapping,2024,Searchformer,https://arxiv.org/abs/2402.14083,url_recorded
+P046,Path Channels and Plan Extension Kernels A Mechanistic Description of Planning in a Sokoban RNN,2026,Interpretability,https://iclr.pangram.com/reviews?query=Path%20Channels%20and%20Plan%20Extension%20Kernels,url_recorded
+P047,Decision Transformer Reinforcement Learning via Sequence Modeling,2021,Offline RL,https://arxiv.org/abs/2106.01345,url_recorded
+P048,Trajectory Transformer,2021,Offline RL,https://arxiv.org/abs/2106.02039,url_recorded
+P049,Language Models as Zero-Shot Planners,2022,LLM Planner,https://arxiv.org/abs/2201.07207,url_recorded
+P050,RAP Reasoning via Planning with Language Models,2023,LLM Planner,https://arxiv.org/abs/2305.14992,url_recorded
+P051,LLM-Planner Few-Shot Grounded Planning for Embodied Agents,2022,LLM Planner,https://arxiv.org/abs/2212.04088,url_recorded
+P052,OpenGame Generating Games with Large Language Models,2024,LLM Game,https://arxiv.org/abs/2407.00950,url_recorded
+P053,LightZero A Unified Benchmark for Monte Carlo Tree Search in General Sequential Decision Scenarios,2023,LightZero,https://github.com/opendilab/LightZero,url_recorded
+P054,mota-js HTML5 Magic Tower Template,2026,Environment,https://github.com/ckcz123/mota-js,url_recorded
+P055,magic-tower-ai Magic Tower Route AI,2026,Baseline Solver,https://github.com/ckcz123/magic-tower-ai,url_recorded
+P056,dasstudio2016 Magic Tower AI Test Repository,2026,Benchmark,https://github.com/ThinerDAS/dasstudio2016,url_recorded

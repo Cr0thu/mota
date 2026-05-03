@@ -1,0 +1,33 @@
+# Python/runtime
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+
+# Local game assets and copyrighted/original binaries.
+game/
+
+# Downloaded papers are large and reproducible from the manifests/reports.
+paper/*.pdf
+paper/pdfs/
+
+# Generated training outputs. Keep small summaries under artifacts/runs.
+artifacts/runs/*
+!artifacts/runs/*.md
+!artifacts/runs/reward_scheme_eval.json
+
+# Future model/checkpoint artifacts.
+*.pt
+*.pth
+*.ckpt
+*.zip
+*.tar
+*.tar.gz

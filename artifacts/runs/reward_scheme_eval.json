@@ -1,0 +1,410 @@
+{
+  "route": "artifacts/expert/route_first10.jsonl",
+  "schemes": {
+    "raw": {
+      "replay_route": {
+        "mode": "replay_route",
+        "scheme": "raw",
+        "route_len": 47,
+        "total_reward": 1.1010000000000002,
+        "components": {
+          "raw": 1.1010000000000002
+        },
+        "solved": false,
+        "final": {
+          "floor": "MT7",
+          "x": 7,
+          "y": 11,
+          "hp": 726,
+          "atk": 20,
+          "def": 10,
+          "mdef": 0,
+          "money": 38,
+          "keys": {
+            "yellowKey": 0,
+            "blueKey": 1,
+            "redKey": 0
+          },
+          "flags": {
+            "03": 1
+          },
+          "steps": 189
+        }
+      },
+      "greedy_immediate": {
+        "mode": "greedy_immediate",
+        "scheme": "raw",
+        "route_len": 80,
+        "total_reward": 0.395,
+        "components": {
+          "raw": 0.395
+        },
+        "solved": false,
+        "final": {
+          "floor": "MT2",
+          "x": 1,
+          "y": 2,
+          "hp": 66,
+          "atk": 10,
+          "def": 10,
+          "mdef": 0,
+          "money": 22,
+          "keys": {
+            "yellowKey": 0,
+            "blueKey": 0,
+            "redKey": 0
+          },
+          "flags": {
+            "03": 1
+          },
+          "steps": 225
+        }
+      }
+    },
+    "label_dense": {
+      "replay_route": {
+        "mode": "replay_route",
+        "scheme": "label_dense",
+        "route_len": 47,
+        "total_reward": 1.4869999999999997,
+        "components": {
+          "key": 0.15,
+          "raw": 1.1010000000000002,
+          "stat_item": 0.08,
+          "step": -0.09400000000000007,
+          "up_floor": 0.25
+        },
+        "solved": false,
+        "final": {
+          "floor": "MT7",
+          "x": 7,
+          "y": 11,
+          "hp": 726,
+          "atk": 20,
+          "def": 10,
+          "mdef": 0,
+          "money": 38,
+          "keys": {
+            "yellowKey": 0,
+            "blueKey": 1,
+            "redKey": 0
+          },
+          "flags": {
+            "03": 1
+          },
+          "steps": 189
+        }
+      },
+      "greedy_immediate": {
+        "mode": "greedy_immediate",
+        "scheme": "label_dense",
+        "route_len": 80,
+        "total_reward": 1.9860000000000013,
+        "components": {
+          "key": 0.15,
+          "raw": 0.4960000000000001,
+          "step": -0.16000000000000011,
+          "up_floor": 1.5000000000000007
+        },
+        "solved": false,
+        "final": {
+          "floor": "MT5",
+          "x": 2,
+          "y": 11,
+          "hp": 4,
+          "atk": 10,
+          "def": 10,
+          "mdef": 0,
+          "money": 24,
+          "keys": {
+            "yellowKey": 0,
+            "blueKey": 1,
+            "redKey": 0
+          },
+          "flags": {
+            "03": 1
+          },
+          "steps": 184
+        }
+      }
+    },
+    "milestone": {
+      "replay_route": {
+        "mode": "replay_route",
+        "scheme": "milestone",
+        "route_len": 47,
+        "total_reward": 2.530000000000005,
+        "components": {
+          "milestone": 2.0,
+          "new_floor": 1.0,
+          "step": -0.47000000000000025
+        },
+        "solved": false,
+        "final": {
+          "floor": "MT7",
+          "x": 7,
+          "y": 11,
+          "hp": 726,
+          "atk": 20,
+          "def": 10,
+          "mdef": 0,
+          "money": 38,
+          "keys": {
+            "yellowKey": 0,
+            "blueKey": 1,
+            "redKey": 0
+          },
+          "flags": {
+            "03": 1
+          },
+          "steps": 189
+        }
+      },
+      "greedy_immediate": {
+        "mode": "greedy_immediate",
+        "scheme": "milestone",
+        "route_len": 80,
+        "total_reward": 5.400000000000006,
+        "components": {
+          "new_floor": 6.200000000000003,
+          "step": -0.8000000000000005
+        },
+        "solved": false,
+        "final": {
+          "floor": "MT3",
+          "x": 10,
+          "y": 11,
+          "hp": 240,
+          "atk": 11,
+          "def": 10,
+          "mdef": 0,
+          "money": 16,
+          "keys": {
+            "yellowKey": 0,
+            "blueKey": 1,
+            "redKey": 0
+          },
+          "flags": {
+            "03": 1
+          },
+          "steps": 290
+        }
+      }
+    },
+    "resource_delta": {
+      "replay_route": {
+        "mode": "replay_route",
+        "scheme": "resource_delta",
+        "route_len": 47,
+        "total_reward": 3.182799999999998,
+        "components": {
+          "atk_delta": 1.7999999999999998,
+          "blue_key_delta": 0.8,
+          "def_delta": 0.0,
+          "hp_delta": 0.2608,
+          "money_delta": 0.51,
+          "red_key_delta": 0.0,
+          "step": -0.18800000000000014,
+          "yellow_key_delta": -1.1102230246251565e-16
+        },
+        "solved": false,
+        "final": {
+          "floor": "MT7",
+          "x": 7,
+          "y": 11,
+          "hp": 726,
+          "atk": 20,
+          "def": 10,
+          "mdef": 0,
+          "money": 38,
+          "keys": {
+            "yellowKey": 0,
+            "blueKey": 1,
+            "redKey": 0
+          },
+          "flags": {
+            "03": 1
+          },
+          "steps": 189
+        }
+      },
+      "greedy_immediate": {
+        "mode": "greedy_immediate",
+        "scheme": "resource_delta",
+        "route_len": 80,
+        "total_reward": 2.71,
+        "components": {
+          "atk_delta": 0.0,
+          "blue_key_delta": 0.8,
+          "def_delta": 0.0,
+          "hp_delta": 0.48,
+          "money_delta": 0.0,
+          "red_key_delta": 0.0,
+          "step": -0.32000000000000023,
+          "yellow_key_delta": 1.75
+        },
+        "solved": false,
+        "final": {
+          "floor": "MT3",
+          "x": 2,
+          "y": 11,
+          "hp": 1000,
+          "atk": 10,
+          "def": 10,
+          "mdef": 0,
+          "money": 4,
+          "keys": {
+            "yellowKey": 5,
+            "blueKey": 1,
+            "redKey": 0
+          },
+          "flags": {
+            "03": 1
+          },
+          "steps": 132
+        }
+      }
+    },
+    "key_pressure": {
+      "replay_route": {
+        "mode": "replay_route",
+        "scheme": "key_pressure",
+        "route_len": 47,
+        "total_reward": -12.2072,
+        "components": {
+          "atk_delta": 1.7999999999999998,
+          "blue_key_delta": 0.8,
+          "def_delta": 0.0,
+          "early_yellow_door": -9.750000000000002,
+          "hp_delta": 0.2608,
+          "money_delta": 0.51,
+          "mt7_key_deadend_risk": -7.2,
+          "red_key_delta": 0.0,
+          "step": -0.18800000000000014,
+          "yellow_key_buffer": 3.9600000000000026,
+          "yellow_key_delta": -1.1102230246251565e-16,
+          "yellow_key_depleted": -2.4
+        },
+        "solved": false,
+        "final": {
+          "floor": "MT7",
+          "x": 7,
+          "y": 11,
+          "hp": 726,
+          "atk": 20,
+          "def": 10,
+          "mdef": 0,
+          "money": 38,
+          "keys": {
+            "yellowKey": 0,
+            "blueKey": 1,
+            "redKey": 0
+          },
+          "flags": {
+            "03": 1
+          },
+          "steps": 189
+        }
+      },
+      "greedy_immediate": {
+        "mode": "greedy_immediate",
+        "scheme": "key_pressure",
+        "route_len": 80,
+        "total_reward": 12.189999999999976,
+        "components": {
+          "atk_delta": 0.0,
+          "blue_key_delta": 0.8,
+          "def_delta": 0.0,
+          "hp_delta": 0.48,
+          "money_delta": 0.0,
+          "red_key_delta": 0.0,
+          "step": -0.32000000000000023,
+          "yellow_key_buffer": 9.479999999999997,
+          "yellow_key_delta": 1.75
+        },
+        "solved": false,
+        "final": {
+          "floor": "MT3",
+          "x": 2,
+          "y": 11,
+          "hp": 1000,
+          "atk": 10,
+          "def": 10,
+          "mdef": 0,
+          "money": 4,
+          "keys": {
+            "yellowKey": 5,
+            "blueKey": 1,
+            "redKey": 0
+          },
+          "flags": {
+            "03": 1
+          },
+          "steps": 132
+        }
+      }
+    },
+    "potential": {
+      "replay_route": {
+        "mode": "replay_route",
+        "scheme": "potential",
+        "route_len": 47,
+        "total_reward": 0.9760000000000009,
+        "components": {
+          "potential_delta": -0.12499999999999867,
+          "raw": 1.1010000000000002
+        },
+        "solved": false,
+        "final": {
+          "floor": "MT7",
+          "x": 7,
+          "y": 11,
+          "hp": 726,
+          "atk": 20,
+          "def": 10,
+          "mdef": 0,
+          "money": 38,
+          "keys": {
+            "yellowKey": 0,
+            "blueKey": 1,
+            "redKey": 0
+          },
+          "flags": {
+            "03": 1
+          },
+          "steps": 189
+        }
+      },
+      "greedy_immediate": {
+        "mode": "greedy_immediate",
+        "scheme": "potential",
+        "route_len": 80,
+        "total_reward": -0.29544666666666686,
+        "components": {
+          "potential_delta": -0.7394466666666664,
+          "raw": 0.44400000000000006
+        },
+        "solved": false,
+        "final": {
+          "floor": "MT5",
+          "x": 2,
+          "y": 11,
+          "hp": 24,
+          "atk": 11,
+          "def": 10,
+          "mdef": 0,
+          "money": 25,
+          "keys": {
+            "yellowKey": 2,
+            "blueKey": 1,
+            "redKey": 0
+          },
+          "flags": {
+            "03": 1
+          },
+          "steps": 176
+        }
+      }
+    }
+  }
+}
