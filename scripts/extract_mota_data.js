@@ -28,6 +28,17 @@ function resolveVar(context, prefix) {
 }
 
 function main() {
+  if (!fs.existsSync(projectDir)) {
+    console.error(`Original game project not found: ${projectDir}`);
+    console.error("");
+    console.error("Normal solver/test work does not need the game/ directory because");
+    console.error("artifacts/data/mota_first10.json is committed to the repository.");
+    console.error("");
+    console.error("Use this script only when regenerating extracted data, for example:");
+    console.error("  node scripts/extract_mota_data.js /path/to/51_2/project artifacts/data/mota_first10.json");
+    process.exit(1);
+  }
+
   const context = {
     main: { floors: {} },
     console,
@@ -69,4 +80,3 @@ function main() {
 }
 
 main();
-

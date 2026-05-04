@@ -1,15 +1,20 @@
 # Mota RL
 
-This repository builds a deterministic environment and hybrid planning/RL pipeline for the
-HTML5 50-floor Magic Tower project in `game/Falsh原版魔塔合集/51_2/project`.
+This repository builds a deterministic environment and hybrid planning/RL pipeline for Magic Tower.
+The default workflow uses the committed first-10-floor extract at
+`artifacts/data/mota_first10.json`, so collaborators do not need the original `game/` directory to
+run tests, replay routes, or work on the solver.
 
 The active experiment starts after the MT3 thief plot, removes shop/fly mechanics, keeps only
 floors 1-10, and targets defeating the skeleton captain on floor 10.
 
 ## Quick Start
 
+Fresh clone:
+
 ```bash
-node scripts/extract_mota_data.js
+git clone git@github.com:Cr0thu/mota.git
+cd mota
 PYTHONPATH=src python3 -m mota_solver.solve_first10 --max-expansions 1000 --write-route --write-best
 PYTHONPATH=src python3 scripts/replay_route.py
 PYTHONPATH=src python3 -m pytest
@@ -77,9 +82,16 @@ The GitHub repository intentionally excludes local game binaries/source dumps, S
 PDF downloads, caches, and large training artifacts. The extracted first-10-floor JSON under
 `artifacts/data/` is kept so tests and simulator experiments can run after clone.
 
+The original `game/` directory is only needed for these tasks:
+
+- regenerating `artifacts/data/mota_first10.json` from the HTML5 project;
+- validating behavior visually with SWF/Ruffle;
+- extending the simulator beyond the already extracted MT1-MT10 data.
+
 If you need to regenerate data from the local HTML5 game project, place the original game assets
-under `game/Falsh原版魔塔合集/51_2/project` and run:
+under `game/Falsh原版魔塔合集/51_2/project` or pass a custom source path:
 
 ```bash
 node scripts/extract_mota_data.js
+node scripts/extract_mota_data.js /path/to/51_2/project artifacts/data/mota_first10.json
 ```

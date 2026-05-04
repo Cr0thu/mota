@@ -30,7 +30,9 @@ def load_game_data(path: str | Path = DEFAULT_DATA_PATH) -> GameData:
     data_path = Path(path)
     if not data_path.exists():
         raise FileNotFoundError(
-            f"{data_path} does not exist. Run `node scripts/extract_mota_data.js` first."
+            f"{data_path} does not exist. For normal solver/test use, clone the repository with "
+            "artifacts/data/mota_first10.json included. Only run `node scripts/extract_mota_data.js` "
+            "when regenerating data from the local original game project under game/."
         )
     payload = json.loads(data_path.read_text(encoding="utf8"))
     return GameData(
@@ -43,4 +45,3 @@ def load_game_data(path: str | Path = DEFAULT_DATA_PATH) -> GameData:
         items=payload["items"],
         floors=payload["floors"],
     )
-
