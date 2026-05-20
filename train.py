@@ -138,7 +138,7 @@ def demo(model_path: str = 'model/ppo_10floor.pth'):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='10层魔塔 PPO 训练')
-    parser.add_argument('--rounds', type=int, default=2000, help='训练回合数 (默认: 2000)')
+    parser.add_argument('--rounds', type=int, default=1000, help='训练回合数 (默认: 2000)')
     parser.add_argument('--save', type=str, default='model/ppo_10floor.pth', help='模型保存路径')
     parser.add_argument('--demo', action='store_true', help='演示模式（使用已保存的模型）')
     args = parser.parse_args()

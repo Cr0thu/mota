@@ -444,6 +444,7 @@ class Mota:
         self.re_update_enemies = {}  # 用於還原怪物數據
         self.re_set_blocks = {}      # 用於還原 set_block 的地圖格子 (pos -> old_cell)
         self.flags = {}              # 用於 afterEvent 的 flag 計數器
+        self.pair_indices = set()    # 樓梯配對觸發時自動加入 observation 的索引集合
         self.tile_path = 'pictures/baseTile.png'
 
     # ------------------------------------------------------------------------
@@ -711,6 +712,7 @@ class Mota:
         self.re_update_enemies.clear()
         self.re_set_blocks.clear()
         self.flags.clear()
+        self.pair_indices.clear()
         self.player.reset(self.env_data['player'])  # 這行必須放在上面兩行之下，否則activated會被設為False
         self.observation.append(self.player)
 
@@ -830,6 +832,8 @@ class Mota:
                     self.create_nodes()
         # 更新觀測值
         self.observation.append(action)
+        # 樓梯配對觸發：觸發樓梯時自動觸發另一側的樓梯並把玩家位置移動過去
+        self._activate_pair_stair(action)
         # 回傳值
         if return_reward:
             return ending, reward
@@ -837,13 +841,51 @@ class Mota:
             return ending
 
     # ------------------------------------------------------------------------
+    #  樓梯配對觸發：觸發 upFloor/downFloor 時自動觸發 changeFloor 對應的另一側樓梯
+    # ------------------------------------------------------------------------
+    def _activate_pair_stair(self, action: Node):
+        if not isinstance(action, Terrain):
+            return
+        if action.id not in ('upFloor', 'downFloor'):
+            return
+        action_pos = self.n2p[action]
+        change_floor = self.env_data['floors'].get('changeFloor', {})
+        if action_pos not in change_floor:
+            return
+        target_pos = change_floor[action_pos]
+        target_node = self.p2n.get(target_pos)
+        if target_node is None or target_node.activated:
+            return
+        if not isinstance(target_node, Terrain):
+            return
+        if target_node.id not in ('upFloor', 'downFloor'):
+            return
+        target_node.activate(self.player)
+        self.observation.append(target_node)
+        self.pair_indices.add(len(self.observation) - 1)
+
+    # ------------------------------------------------------------------------
     #  退回行動
     # ------------------------------------------------------------------------
     def back_step(self, times: int):
         if times <= 0:
             return
+        # 將 times (使用者層級的回退步數) 換算為 n_entries (observation 中實際要回退的條目數)
+        # 因為樓梯配對觸發會在 observation 中加入 2 條 (來源樓梯 + 對應的目標樓梯)
+        n_entries = 0
+        max_back = len(self.observation) - 1  # 不能回退到 observation[0] 之前 (player 本身)
+        for _ in range(times):
+            if n_entries >= max_back:
+                break
+            idx_to_check = len(self.observation) - 1 - n_entries
+            if idx_to_check in self.pair_indices:
+                n_entries += 2
+            else:
+                n_entries += 1
+        if n_entries <= 0:
+            return
         need_recreate = False
-        for action in self.observation[:-times - 1:-1]:  # 反向迭代，該方法比reversed()還快
+        for action in self.observation[:-n_entries - 1:-1]:  # 反向迭代，該方法比reversed()還快
             # 事件後處理(全局處理)
             if self.n2p[action] in self.env_data['floors']['afterEvent']:
                 for command in self.env_data['floors']['afterEvent'][self.n2p[action]][::-1]:
@@ -937,7 +979,9 @@ class Mota:
                 node.links.clear()
             self.create_nodes()
         # 更新觀測值
-        self.observation = self.observation[:-times]  # 利用切片的方式節省迭代pop花費的時間
+        new_len = len(self.observation) - n_entries
+        self.pair_indices = {i for i in self.pair_indices if i < new_len}
+        self.observation = self.observation[:-n_entries]  # 利用切片的方式節省迭代pop花費的時間
 
     # ------------------------------------------------------------------------
     #  獲取所有可選擇的行動
@@ -952,7 +996,16 @@ class Mota:
             actions.append(node)
         # 添加目前位置
         visited.add(node)
-        q.append(node)
+        # 若玩家位於樓梯配對觸發的目標樓梯上，直接連結會指向舊樓層；跳過直接連結，
+        # 只透過已觸發的來源樓梯（前一個 observation 條目）繼續 BFS，讓動作列表正確只顯示新樓層
+        is_pair_dest = (len(self.observation) - 1) in self.pair_indices
+        if is_pair_dest:
+            for _node in node.links:
+                visited.add(_node)
+                if _node.activated:
+                    q.append(_node)
+        else:
+            q.append(node)
         while q:
             node = q.pop()
             for _node in node.links:
@@ -996,9 +1049,20 @@ class Mota:
     # ------------------------------------------------------------------------
     def convert_action_index(self, observation: list) -> list:
         path = []
-        for action in observation[len(self.observation):]:
+        i = len(self.observation)
+        while i < len(observation):
+            action = observation[i]
+            # 樓梯配對觸發會自動在目標樓梯位置新增一筆，此處跳過這些自動產生的條目
+            if action.activated and i > 0:
+                prev = observation[i - 1]
+                if (isinstance(prev, Terrain) and prev.id in ('upFloor', 'downFloor')
+                        and isinstance(action, Terrain) and action.id in ('upFloor', 'downFloor')):
+                    i += 1
+                    continue
             path.append(self.get_actions().index(action))
+            prev_len = len(self.observation)
             self.step(action)
+            i += len(self.observation) - prev_len  # 前進實際新增的條目數
         # 重置環境
         self.reset()
         return path

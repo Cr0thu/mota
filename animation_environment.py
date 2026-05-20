@@ -116,8 +116,12 @@ class Mota(environment.Mota):
             pos = self.n2p[self.observation[-1]]
             self.anima_frame.hide_line(pos)
             return_ = environment.Mota.step(self, action, **kwargs)
-            pos = self.n2p[action]
+            # 主角移動到實際位置（樓梯配對觸發後 observation[-1] 即為目標樓梯位置）
+            pos = self.n2p[self.observation[-1]]
             if action.activated:
+                self.anima_frame.hide_tile(self.n2p[action])
+            # 若配對觸發且目標與動作不同，也隱藏目標樓梯
+            if self.observation[-1] is not action and self.observation[-1].activated:
                 self.anima_frame.hide_tile(pos)
             # 主角移動
             self.anima_frame.player_move(pos)
