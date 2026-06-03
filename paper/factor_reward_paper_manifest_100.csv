@@ -60,7 +60,7 @@
 "FR059","Mastering Diverse Domains through World Models","2023","world-model","https://arxiv.org/abs/2301.04104","survey","DreamerV3 泛化经验"
 "FR060","Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model","2019","model-based-rl","https://arxiv.org/abs/1911.08265","survey","MuZero 证明隐模型+搜索的通用性"
 "FR061","Mastering Atari Games with Limited Data","2021","model-based-rl","https://arxiv.org/abs/2111.00210","survey","EfficientZero 强调样本效率"
-"FR062","Policy Improvement by Planning with Gumbel","2021","model-based-rl","https://arxiv.org/abs/2111.03157","survey","Gumbel MuZero 改进动作选择"
+"FR062","Policy Improvement by Planning with Gumbel","2021","model-based-rl","https://openreview.net/forum?id=bERaNdoegnO","survey","Gumbel MuZero 改进动作选择"
 "FR063","Thinker: Learning to Plan and Act","2023","model-based-rl","https://arxiv.org/abs/2307.14993","deep","让 agent 自主决定思考深度，适合关键节点规划"
 "FR064","UniZero: Generalized and Efficient Planning with Scalable Latent World Models","2024","model-based-rl","https://arxiv.org/abs/2406.10667","survey","长历史解耦适合跨楼层记忆"
 "FR065","MCTSnets: Learning to Plan with Monte Carlo Tree Search","2018","neural-search","https://arxiv.org/abs/1802.04697","survey","把搜索过程神经化，可用于学习启发式"

@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage{iclr2026_conference,times}
+\input{math_commands.tex}
+\usepackage{hyperref}
+\usepackage{url}
+
+\title{Proposal}
+
+\author{
+Bingsong Tong (2025310812), Zhizhou Qu (2025310268), Rui Chen (2025211105)\\
+Deep Reinforcement Learning Course Project 2026
+}
+
+\iclrfinalcopy
+
+\begin{document}
+\maketitle
+
+\section{Problem and Motivation}
+\emph{Magic Tower} is a deterministic grid-based RPG puzzle where every key, gem, potion, door, and monster encounter can determine the feasibility of much later decisions. The project goal is to train and evaluate an agent that starts after the thief-opening event, solves Floors 1--10, and defeats the Floor-10 skeleton captain with positive HP. The task is course-relevant because it exposes long-horizon credit assignment, irreversible resource allocation, legal-action masking, and reward shaping in a fully observable but combinatorially hard environment.
+
+\section{Related Work and Baselines}
+We will review potential-based reward shaping, DQN/Rainbow-style value learning, action-masked policy optimization, hierarchical RL, and planning/search systems such as AlphaZero/MuZero, Thinker, Searchformer, HalfWeg, and Sokoban planning analyses. The baseline suite will include a deterministic best-first/beam planner with hand-written heuristics, random and greedy macro-action policies under legal-action masks, Maskable PPO or DQN with prioritized replay, and reward ablations that remove combat-threshold information.
+
+\section{Proposed Method}
+The central research question is how to design and learn a useful reward for this type of long-horizon deterministic puzzle. We will start from potential-based reward shaping, but treat the potential function as an object to be tested and improved rather than a fixed hand-written score. Candidate rewards will combine hero status, remaining keys, reachable resources, openable doors, killable monsters, and attack/defense threshold effects. We will compare several reward variants by training RL agents in the same macro-action environment, then analyze which terms actually improve stage progress and final success. Planning and staged search will be used mainly to generate diverse experience and diagnostics, while the final goal is an RL policy that can complete the first ten floors reliably.
+
+\section{Current Progress and Evaluation Plan}
+We have already built a Python game framework for the simplified first-ten-floor setting, including a deterministic simulator, a Gymnasium-style macro-action interface, action masks, reward-factor debugging, trajectory logging, and a staged search prototype. The current system can replay legal routes and record state snapshots, legal actions, mask reasons, battle losses, killable monsters, openable doors, reachable resources, and boss damage margins. Next, we will run reward ablations and train Maskable PPO or DQN-style agents under fixed seeds. We will evaluate stage success rate, final HP, key balance, boss margin, search expansions, and 100-episode success rate. The main target is at least 95\% success on the first-ten-floor task. Local CPU is enough for simulator and reward experiments; one RTX 4090 is sufficient for policy/value training.
+
+\end{document}

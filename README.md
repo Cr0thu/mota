@@ -1,97 +1,112 @@
-# Mota RL
+# Mota AlphaZero
 
-This repository builds a deterministic environment and hybrid planning/RL pipeline for Magic Tower.
-The default workflow uses the committed first-10-floor extract at
-`artifacts/data/mota_first10.json`, so collaborators do not need the original `game/` directory to
-run tests, replay routes, or work on the solver.
+This repository contains a deterministic first-10-floor Magic Tower simulator,
+route replay/validation tools, a local visualizer, and the current
+AlphaZero-style search/training code.
 
-The active experiment starts after the MT3 thief plot, removes shop/fly mechanics, keeps only
-floors 1-10, and targets defeating the skeleton captain on floor 10.
+The active research setting starts after the compulsory MT3 demon / MT2 thief
+story, keeps floors MT1-MT10, removes the 4F shop and flyer, and targets
+defeating the 10F skeleton captain. The MT6/MT7 one-time key merchants remain
+modeled as legal NPC actions when money is sufficient.
 
-## Quick Start
+## Current Direction
 
-Fresh clone:
+The current training line is **not DQN**. Use:
 
-```bash
-git clone git@github.com:Cr0thu/mota.git
-cd mota
-PYTHONPATH=src python3 -m mota_solver.solve_first10 --max-expansions 1000 --write-route --write-best
-PYTHONPATH=src python3 scripts/replay_route.py
-PYTHONPATH=src python3 -m pytest
-```
+- `MotaSimulator` for deterministic state transitions.
+- `GraphStateBuilder` for the global interaction graph.
+- `GraphPolicyValueNet` for policy/value prediction over graph nodes.
+- `AlphaMCTS` for AlphaZero-style PUCT planning.
+- Go-Explore / resource planner scripts only as search/data generators, not as
+  DQN trainers.
 
-The default scenario is already post-thief, no shop, and no flyer. To increase search budget:
+Do not use the removed Graph-DQN scripts for new experiments. Historical hp403
+routes are benchmarks or warm-start ablations only; keep them separate from
+pure no-hp403 runs.
 
-```bash
-PYTHONPATH=src python3 -m mota_solver.solve_first10 \
-  --max-expansions 10000 \
-  --heuristic landmark_key_potential \
-  --write-route \
-  --write-best
-
-PYTHONPATH=src python3 scripts/replay_route.py
-```
-
-`--write-best` writes the best legal partial route when the current search budget does not yet
-defeat the 10F skeleton captain. The simulator and replay pipeline are deterministic; the next
-engineering step is to promote the 8F blue-key and 9F shield milestones into the expert search so
-`artifacts/expert/route_first10.jsonl` reaches `flag:10f战胜骷髅队长=true`.
-
-Current best simplified-scenario heuristic run:
+## Local Setup
 
 ```bash
-PYTHONPATH=src python3 -m mota_solver.solve_first10 \
-  --max-expansions 50000 \
-  --heuristic landmark_key_potential \
-  --write-route \
-  --write-best \
-  --route-out artifacts/expert/route_first10_landmark_50k_v3.jsonl
+cd /Users/cr0/Documents/项目/mota
+PYTHONPATH=src python -m pytest
 ```
 
-The run reaches MT9 with the 9F shield, but has not yet defeated the 10F skeleton captain. See
-`artifacts/runs/landmark_heuristic_summary.md`.
+The committed data extract is:
 
-Optional RL dependencies:
+```text
+artifacts/data/mota_first10.json
+```
+
+The original `game/` directory is ignored by git and is only needed to
+regenerate this JSON or compare behavior visually against the game assets.
+
+## Useful Commands
+
+Replay a route:
 
 ```bash
-uv venv --python 3.10 .venv
-source .venv/bin/activate
-uv pip install -e '.[rl,test]'
-PYTHONPATH=src python -m mota_rl.behavior_clone --route artifacts/expert/route_first10.jsonl
-PYTHONPATH=src python -m mota_rl.train_masked_ppo --timesteps 50000
+PYTHONPATH=src python scripts/replay_route.py \
+  --route artifacts/expert/route_alpha4090_boss_success_hp125_20260531.jsonl
 ```
 
-Remote pod workflow keeps the existing global ailab config unchanged:
+Validate no-shop/no-fly constraints:
 
 ```bash
-zsh -lc 'source ~/.zshrc && ailab-sync-up /Users/cr0/Documents/项目/mota /root/mota/mota'
-zsh -lc 'source ~/.zshrc && ailab-exec bash -lc "cd /root/mota/mota && PYTHONPATH=src python3 -m mota_solver.solve_first10 --max-expansions 10000 --write-route --write-best"'
+PYTHONPATH=src python scripts/validate_route_constraints.py \
+  artifacts/expert/route_alpha4090_boss_success_hp125_20260531.jsonl
 ```
 
-## Paper Research
+Run a local AlphaZero/MCTS stage smoke test:
 
-- `paper/paper_manifest.csv`: 56 papers/projects with open PDF or URL.
-- `paper/pdfs/`: downloaded PDFs for MuZero, UniZero, Thinker, Searchformer, NLE, Rainbow, PER, BTR, EfficientZero, Gumbel MuZero.
-- `paper/reading_report.md`: per-paper notes and project-specific recommendations.
-- `paper/factor_reward_paper_manifest_100.csv`: 110 papers linking quant factor mining, reward design, IRL, and long-horizon puzzle solving.
-- `paper/factor_reward_reading_report.md`: 20-paper deep-read report and a concrete factor/reward engineering plan.
+```bash
+PYTHONPATH=src python scripts/train_alpha_mota_stage.py \
+  --protocol no_agent_manual \
+  --target-stage sword \
+  --episodes 2 \
+  --simulations 16 \
+  --max-macros 80 \
+  --out-dir artifacts/runs/local_alpha_smoke
+```
 
-## Repository Hygiene
+Run the visualizer:
 
-The GitHub repository intentionally excludes local game binaries/source dumps, SWF files, generated
-PDF downloads, caches, and large training artifacts. The extracted first-10-floor JSON under
-`artifacts/data/` is kept so tests and simulator experiments can run after clone.
+```bash
+open tools/visualizer/run_visualizer_iterm.command
+```
 
-The original `game/` directory is only needed for these tasks:
-
-- regenerating `artifacts/data/mota_first10.json` from the HTML5 project;
-- validating behavior visually with SWF/Ruffle;
-- extending the simulator beyond the already extracted MT1-MT10 data.
-
-If you need to regenerate data from the local HTML5 game project, place the original game assets
-under `game/Falsh原版魔塔合集/51_2/project` or pass a custom source path:
+Regenerate first-10-floor data from the local HTML5 project:
 
 ```bash
 node scripts/extract_mota_data.js
 node scripts/extract_mota_data.js /path/to/51_2/project artifacts/data/mota_first10.json
 ```
+
+## 4090 Workflow
+
+Experiments should run on the 4090 pod under:
+
+```text
+/root/mota/mota
+```
+
+Use the `humanoid` conda environment on the pod. The current remote line is
+AlphaZero-style policy/value + MCTS; keep each run in its own
+`artifacts/runs/<run_id>/` directory and save `protocol.json` with
+`dqn_used=false` for no-DQN runs.
+
+## Repository Hygiene
+
+Keep in git:
+
+- simulator, graph state, reward, search, AlphaZero/MCTS source code;
+- tests;
+- `artifacts/data/mota_first10.json`;
+- a small set of important routes in `artifacts/expert/`;
+- paper manifests/reports and proposal source.
+
+Do not commit:
+
+- original `game/` binaries/source dumps;
+- local training payloads, checkpoints, and run directories;
+- downloaded/generated PDFs outside intentional paper/proposal deliverables;
+- Python caches and local smoke-test output.

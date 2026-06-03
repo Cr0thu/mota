@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import math
+import os
 from collections import deque
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Literal
@@ -17,6 +18,20 @@ DIRS: dict[Direction, tuple[int, int]] = {
     "left": (-1, 0),
     "right": (1, 0),
 }
+
+
+def _reconstruct_reachable_path(
+    cell: tuple[int, int],
+    parents: dict[tuple[int, int], tuple[tuple[int, int], Direction] | None],
+) -> list[Direction]:
+    path: list[Direction] = []
+    cursor = cell
+    while parents[cursor] is not None:
+        parent, direction = parents[cursor]
+        path.append(direction)
+        cursor = parent
+    path.reverse()
+    return path
 
 
 @dataclass
@@ -39,10 +54,20 @@ class MotaState:
     dead: bool = False
     done: bool = False
     log: list[str] = field(default_factory=list)
+    _signature_cache: dict[str, Any] = field(default_factory=dict, repr=False, compare=False)
 
-    def clone(self) -> "MotaState":
+    def clone(self, *, copy_log: bool | None = None) -> "MotaState":
+        # Floor grids contain only integers; copying rows is much cheaper than
+        # copy.deepcopy while still isolating subsequent tile mutations.
+        if copy_log is None:
+            copy_log = os.environ.get("MOTA_COPY_STATE_LOGS", "").strip().lower() in {
+                "1",
+                "true",
+                "yes",
+                "on",
+            }
         return MotaState(
-            floors=copy.deepcopy(self.floors),
+            floors={floor_id: [row[:] for row in grid] for floor_id, grid in self.floors.items()},
             floor_id=self.floor_id,
             x=self.x,
             y=self.y,
@@ -53,14 +78,18 @@ class MotaState:
             money=self.money,
             exp=self.exp,
             items=dict(self.items),
-            flags=copy.deepcopy(self.flags),
+            flags=dict(self.flags),
             visited_floors=set(self.visited_floors),
             triggered_events=set(self.triggered_events),
             steps=self.steps,
             dead=self.dead,
             done=self.done,
-            log=list(self.log),
+            log=list(self.log) if copy_log else [],
+            _signature_cache=dict(self._signature_cache),
         )
+
+    def invalidate_signatures(self) -> None:
+        self._signature_cache.clear()
 
 
 @dataclass(frozen=True)
@@ -76,6 +105,9 @@ class SimulatorConfig:
     enable_shop: bool = False
     enable_fly: bool = False
     first_ten_only: bool = True
+    allow_negative_hp: bool = False
+    min_hp: int = -2000
+    stop_on_boss: bool = True
 
 
 class MotaSimulator:
@@ -85,11 +117,108 @@ class MotaSimulator:
         self.data = data
         self.values = data.values
         self.config = config or SimulatorConfig()
+        self._map_info_by_tile: dict[int, dict[str, Any]] = {
+            int(tile): info for tile, info in data.maps.items()
+        }
+        self._block_id_by_tile: dict[int, str | None] = {
+            tile: info.get("id") for tile, info in self._map_info_by_tile.items()
+        }
+        self._block_cls_by_tile: dict[int, str | None] = {
+            tile: info.get("cls") for tile, info in self._map_info_by_tile.items()
+        }
+        self._graph_kind_by_tile: dict[int, str | None] = {
+            tile: self._classify_graph_tile(tile, info)
+            for tile, info in self._map_info_by_tile.items()
+        }
         self.floor_order = [
             floor_id
             for floor_id in data.floor_ids
             if not self.config.first_ten_only or 1 <= int(floor_id[2:]) <= 10
         ]
+        self._graph_floor_coordinates: dict[str, tuple[tuple[int, int], ...]] = {}
+        for floor_id in self.floor_order:
+            floor = data.floors.get(floor_id, {})
+            event_cells = {
+                tuple(map(int, key.split(",")))
+                for key in floor.get("events", {})
+                if "," in key
+            }
+            coordinates: set[tuple[int, int]] = set(event_cells)
+            for y, row in enumerate(floor.get("map", [])):
+                for x, tile in enumerate(row):
+                    if self.graph_tile_kind(tile):
+                        coordinates.add((x, y))
+            self._graph_floor_coordinates[floor_id] = tuple(
+                sorted(coordinates, key=lambda pos: (pos[1], pos[0]))
+            )
+        self.cache_enabled = os.environ.get("MOTA_DISABLE_SIM_CACHE", "").strip().lower() not in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }
+        self.cache_limit = max(0, int(os.environ.get("MOTA_SIM_CACHE_LIMIT", "50000") or 50000))
+        self.graph_cache_limit = max(0, int(os.environ.get("MOTA_GRAPH_CACHE_LIMIT", "8000") or 8000))
+        self._damage_cache: dict[tuple[Any, ...], dict[str, int] | None] = {}
+        self._reachable_parent_cache: dict[
+            tuple[Any, ...],
+            dict[tuple[int, int], tuple[tuple[int, int], Direction] | None],
+        ] = {}
+        self._reachable_cache: dict[tuple[Any, ...], dict[tuple[int, int], list[Direction]]] = {}
+        self._macro_actions_cache: dict[tuple[Any, ...], list[dict[str, Any]]] = {}
+        self._graph_state_cache: dict[tuple[Any, ...], dict[str, Any]] = {}
+        self._cache_hits: dict[str, int] = {
+            "damage": 0,
+            "reachable_parents": 0,
+            "reachable": 0,
+            "macro_actions": 0,
+            "graph_state": 0,
+        }
+        self._cache_misses: dict[str, int] = {
+            "damage": 0,
+            "reachable_parents": 0,
+            "reachable": 0,
+            "macro_actions": 0,
+            "graph_state": 0,
+        }
+
+    def clear_caches(self) -> None:
+        self._damage_cache.clear()
+        self._reachable_parent_cache.clear()
+        self._reachable_cache.clear()
+        self._macro_actions_cache.clear()
+        self._graph_state_cache.clear()
+
+    def cache_stats(self) -> dict[str, dict[str, int]]:
+        return {
+            "hits": dict(self._cache_hits),
+            "misses": dict(self._cache_misses),
+            "sizes": {
+                "damage": len(self._damage_cache),
+                "reachable_parents": len(self._reachable_parent_cache),
+                "reachable": len(self._reachable_cache),
+                "macro_actions": len(self._macro_actions_cache),
+                "graph_state": len(self._graph_state_cache),
+            },
+        }
+
+    @staticmethod
+    def _classify_graph_tile(tile: int, info: dict[str, Any]) -> str | None:
+        if int(tile) == 0:
+            return None
+        block_cls = info.get("cls")
+        block_id = info.get("id")
+        if block_cls == "items":
+            return "item"
+        if block_cls == "enemys":
+            return "boss" if block_id == "skeletonCaptain" else "enemy"
+        if info.get("trigger") == "openDoor":
+            return "door"
+        if block_cls == "npcs":
+            return "npc"
+        if block_id in {"upFloor", "downFloor"}:
+            return "stair"
+        return None
 
     def reset(self) -> MotaState:
         if self.config.scenario == "simple":
@@ -133,12 +262,13 @@ class MotaSimulator:
         return state
 
     def reset_simple(self) -> MotaState:
-        """Start after the MT3 thief plot and remove shop/fly mechanics.
+        """Start after the early MT3/MT2 story sequence and remove shop/fly mechanics.
 
         This scenario is intentionally smaller for algorithm experiments:
         - only MT1-MT10 maps are loaded;
-        - the MT3 plot reset has already happened;
-        - the MT2 thief has already opened the road;
+        - the 1F compulsory slimes have already been killed for 4 money;
+        - the MT3 demon-king plot has reset hero stats and teleported to MT2;
+        - the MT2 thief has already opened the road and reset HP to 400;
         - the flyer item and 4F shop blocks are removed;
         - no shop/fly macro actions are generated.
         """
@@ -172,20 +302,24 @@ class MotaSimulator:
                 "nowWeapon": None,
                 "nowShield": None,
                 "魔法免疫": False,
-                "03": 1,
                 "simple": True,
+                "03": 1,
             },
             visited_floors={"MT2"},
             triggered_events={("MT3", 5, 9), ("MT2", 3, 7)},
         )
+        for px, py in [(3, 1), (4, 1), (5, 1)]:
+            self.set_tile(state, px, py, 0, "MT1")
         for px, py in [(5, 7), (5, 8), (4, 9), (6, 9), (5, 10), (5, 9)]:
             self.set_tile(state, px, py, 0, "MT3")
+        for px, py in [(2, 3), (2, 4)]:
+            self.set_tile(state, px, py, 0, "MT10")
         self.set_tile(state, 2, 7, 0, "MT2")
         self.set_tile(state, 3, 7, 0, "MT2")
         self.set_tile(state, 2, 11, 0, "MT1")
         for px, py in [(5, 1), (6, 1), (7, 1)]:
             self.set_tile(state, px, py, 0, "MT4")
-        state.log.append("reset simple post-thief no-shop no-fly money=4")
+        state.log.append("reset simple post-MT3/post-thief no-shop no-fly money=4")
         return state
 
     def tile(self, state: MotaState, x: int, y: int, floor_id: str | None = None) -> int:
@@ -199,7 +333,13 @@ class MotaSimulator:
     ) -> None:
         if isinstance(tile, str):
             tile = self.tile_number(tile)
-        state.floors[floor_id or state.floor_id][y][x] = int(tile)
+        target_floor = floor_id or state.floor_id
+        old_tile = state.floors[target_floor][y][x]
+        new_tile = int(tile)
+        if old_tile == new_tile:
+            return
+        state.floors[target_floor][y][x] = new_tile
+        state.invalidate_signatures()
 
     def tile_number(self, block_id: str) -> int:
         for number, info in self.data.maps.items():
@@ -209,14 +349,89 @@ class MotaSimulator:
             return 0
         raise KeyError(block_id)
 
+    def floor_signature(self, state: MotaState, floor_id: str | None = None) -> tuple[tuple[int, ...], ...]:
+        target_floor = floor_id or state.floor_id
+        cache_key = f"floor:{target_floor}"
+        cached = state._signature_cache.get(cache_key)
+        if cached is not None:
+            return cached
+        signature = tuple(tuple(row) for row in state.floors[target_floor])
+        state._signature_cache[cache_key] = signature
+        return signature
+
+    def floors_signature(self, state: MotaState) -> tuple[tuple[str, tuple[tuple[int, ...], ...]], ...]:
+        cached = state._signature_cache.get("floors")
+        if cached is not None:
+            return cached
+        signature = tuple(
+            (floor_id, self.floor_signature(state, floor_id))
+            for floor_id in self.floor_order
+            if floor_id in state.floors
+        )
+        state._signature_cache["floors"] = signature
+        return signature
+
+    def fast_state_key(self, state: MotaState) -> tuple[Any, ...]:
+        return (
+            state.floor_id,
+            state.x,
+            state.y,
+            state.hp,
+            state.atk,
+            state.defense,
+            state.mdef,
+            state.money,
+            state.exp,
+            tuple(sorted((k, v) for k, v in state.items.items() if v)),
+            tuple(sorted((k, str(v)) for k, v in state.flags.items() if v)),
+            tuple(sorted(state.triggered_events)),
+            self.floors_signature(state),
+        )
+
+    def graph_state_cache_key(
+        self,
+        state: MotaState,
+        *,
+        max_nodes: int,
+        include_unlock_values: bool,
+    ) -> tuple[Any, ...]:
+        return (
+            max_nodes,
+            bool(include_unlock_values),
+            self.fast_state_key(state),
+        )
+
+    def cached_graph_state(self, key: tuple[Any, ...]) -> dict[str, Any] | None:
+        if not self.cache_enabled or self.graph_cache_limit <= 0:
+            return None
+        cached = self._graph_state_cache.get(key)
+        if cached is not None:
+            self._cache_hits["graph_state"] += 1
+        else:
+            self._cache_misses["graph_state"] += 1
+        return cached
+
+    def set_cached_graph_state(self, key: tuple[Any, ...], value: dict[str, Any]) -> None:
+        if not self.cache_enabled or self.graph_cache_limit <= 0:
+            return
+        if len(self._graph_state_cache) >= self.graph_cache_limit:
+            self._graph_state_cache.clear()
+        self._graph_state_cache[key] = value
+
     def block_info(self, tile: int) -> dict[str, Any]:
-        return self.data.maps.get(str(tile), {})
+        return self._map_info_by_tile.get(int(tile), {})
 
     def block_id(self, tile: int) -> str | None:
-        return self.block_info(tile).get("id")
+        return self._block_id_by_tile.get(int(tile))
 
     def block_cls(self, tile: int) -> str | None:
-        return self.block_info(tile).get("cls")
+        return self._block_cls_by_tile.get(int(tile))
+
+    def graph_tile_kind(self, tile: int) -> str | None:
+        return self._graph_kind_by_tile.get(int(tile))
+
+    def graph_floor_coordinates(self, floor_id: str) -> tuple[tuple[int, int], ...]:
+        return self._graph_floor_coordinates.get(floor_id, ())
 
     def is_enemy_tile(self, tile: int) -> bool:
         return self.block_cls(tile) == "enemys"
@@ -230,11 +445,19 @@ class MotaSimulator:
     def is_stair_tile(self, tile: int) -> bool:
         return self.block_id(tile) in {"upFloor", "downFloor"}
 
+    def is_npc_tile(self, tile: int) -> bool:
+        return self.block_cls(tile) == "npcs"
+
     def is_wall_tile(self, tile: int) -> bool:
         if tile == 0:
             return False
         info = self.block_info(tile)
-        if self.is_enemy_tile(tile) or self.is_item_tile(tile) or self.is_door_tile(tile):
+        if (
+            self.is_enemy_tile(tile)
+            or self.is_item_tile(tile)
+            or self.is_door_tile(tile)
+            or self.is_npc_tile(tile)
+        ):
             return False
         return info.get("noPass") is True or info.get("noPass") == "true" or tile == 1
 
@@ -272,7 +495,21 @@ class MotaSimulator:
         self.set_tile(state, x, y, "specialDoor")
         state.log.append(f"close specialDoor at {state.floor_id}:{x},{y}")
 
-    def damage_info(self, state: MotaState, enemy_id: str) -> dict[str, int] | None:
+    def damage_info_for_stats(
+        self,
+        enemy_id: str,
+        *,
+        atk: int,
+        defense: int,
+        mdef: int = 0,
+    ) -> dict[str, int] | None:
+        cache_key = (enemy_id, int(atk), int(defense), int(mdef))
+        if self.cache_enabled:
+            cached = self._damage_cache.get(cache_key)
+            if cache_key in self._damage_cache:
+                self._cache_hits["damage"] += 1
+                return cached
+            self._cache_misses["damage"] += 1
         enemy = self.data.enemys[enemy_id]
         mon_hp = int(enemy.get("hp", 0))
         mon_atk = int(enemy.get("atk", 0))
@@ -280,11 +517,15 @@ class MotaSimulator:
         special = enemy.get("special", 0)
         specials = set(special if isinstance(special, list) else [special])
 
-        hero_per_damage = max(state.atk - mon_def, 0)
+        hero_per_damage = max(int(atk) - mon_def, 0)
         if hero_per_damage <= 0:
+            if self.cache_enabled:
+                if len(self._damage_cache) >= self.cache_limit:
+                    self._damage_cache.clear()
+                self._damage_cache[cache_key] = None
             return None
         turn = math.ceil(mon_hp / hero_per_damage)
-        per_damage = mon_atk if 2 in specials else max(mon_atk - state.defense, 0)
+        per_damage = mon_atk if 2 in specials else max(mon_atk - int(defense), 0)
         if 4 in specials:
             per_damage *= 2
         if 5 in specials:
@@ -296,21 +537,38 @@ class MotaSimulator:
         if 1 in specials:
             init_damage += per_damage
         if 7 in specials:
-            init_damage += math.floor(float(enemy.get("defValue") or self.values["breakArmor"]) * state.defense)
+            init_damage += math.floor(float(enemy.get("defValue") or self.values["breakArmor"]) * int(defense))
         if 9 in specials:
-            init_damage += math.floor(float(enemy.get("n") or self.values["purify"]) * state.mdef)
+            init_damage += math.floor(float(enemy.get("n") or self.values["purify"]) * int(mdef))
         counter = 0
         if 8 in specials:
-            counter += math.floor(float(enemy.get("atkValue") or self.values["counterAttack"]) * state.atk)
+            counter += math.floor(float(enemy.get("atkValue") or self.values["counterAttack"]) * int(atk))
 
-        damage = init_damage + (turn - 1) * per_damage + turn * counter - state.mdef
+        damage = init_damage + (turn - 1) * per_damage + turn * counter - int(mdef)
         damage = max(0, int(damage))
-        return {"damage": damage, "turn": turn}
+        result = {"damage": damage, "turn": turn}
+        if self.cache_enabled:
+            if len(self._damage_cache) >= self.cache_limit:
+                self._damage_cache.clear()
+            self._damage_cache[cache_key] = result
+        return result
+
+    def damage_info(self, state: MotaState, enemy_id: str) -> dict[str, int] | None:
+        return self.damage_info_for_stats(
+            enemy_id,
+            atk=state.atk,
+            defense=state.defense,
+            mdef=state.mdef,
+        )
 
     def can_battle(self, state: MotaState, tile: int) -> bool:
         enemy_id = self.block_id(tile)
         info = self.damage_info(state, enemy_id) if enemy_id else None
-        return info is not None and state.hp > info["damage"]
+        if info is None:
+            return False
+        if state.hp > info["damage"]:
+            return True
+        return self.config.allow_negative_hp and state.hp - info["damage"] >= self.config.min_hp
 
     def battle(self, state: MotaState, x: int, y: int) -> bool:
         tile = self.tile(state, x, y)
@@ -318,9 +576,17 @@ class MotaSimulator:
         if not enemy_id:
             return False
         info = self.damage_info(state, enemy_id)
-        if info is None or state.hp <= info["damage"]:
+        if info is None:
             state.dead = True
             state.log.append(f"dead fighting {enemy_id} at {state.floor_id}:{x},{y}")
+            return False
+        if state.hp <= info["damage"] and not self.config.allow_negative_hp:
+            state.dead = True
+            state.log.append(f"dead fighting {enemy_id} at {state.floor_id}:{x},{y}")
+            return False
+        if self.config.allow_negative_hp and state.hp - info["damage"] < self.config.min_hp:
+            state.dead = True
+            state.log.append(f"relaxed hp floor exceeded fighting {enemy_id} at {state.floor_id}:{x},{y}")
             return False
         state.hp -= info["damage"]
         enemy = self.data.enemys[enemy_id]
@@ -404,13 +670,17 @@ class MotaSimulator:
         elif self.is_item_tile(tile):
             self.get_item(state, nx, ny)
             reward += 0.02
+        elif self.is_npc_tile(tile):
+            if not self.trigger_npc_at(state, nx, ny):
+                return Transition(False, -0.05, "npc failed")
+            reward += 0.02
 
         state.x, state.y = nx, ny
         state.steps += 1
         self.trigger_event_at(state, nx, ny)
         self.change_floor_if_needed(state)
         self.check_auto_events(state)
-        if state.flags.get("10f战胜骷髅队长"):
+        if state.flags.get("10f战胜骷髅队长") and self.config.stop_on_boss:
             state.done = True
             reward += 10.0
         if state.dead:
@@ -435,6 +705,8 @@ class MotaSimulator:
         dest = spec.get("floorId")
         if dest == ":next":
             idx = self.floor_order.index(state.floor_id)
+            if idx + 1 >= len(self.floor_order):
+                return
             dest = self.floor_order[idx + 1]
         elif dest == ":before":
             idx = self.floor_order.index(state.floor_id)
@@ -456,9 +728,27 @@ class MotaSimulator:
         if key in state.triggered_events:
             return
         if state.floor_id == "MT2" and (x, y) == (3, 7):
+            state.hp = 400
             self.open_door(state, 2, 7, consume_key=False)
             self.set_tile(state, 3, 7, 0)
             state.triggered_events.add(key)
+            state.log.append("MT2 thief event hp=400 road opened")
+        elif state.floor_id == "MT3" and (x, y) == (5, 9):
+            state.hp = 400
+            state.atk = 10
+            state.defense = 10
+            state.mdef = 0
+            state.flags["03"] = 1
+            state.flags["nowWeapon"] = None
+            state.flags["nowShield"] = None
+            state.flags["魔法免疫"] = False
+            for px, py in [(5, 7), (5, 8), (4, 9), (6, 9), (5, 10), (5, 9)]:
+                self.set_tile(state, px, py, 0, "MT3")
+            state.floor_id = "MT2"
+            state.x, state.y = 3, 8
+            state.visited_floors.add("MT2")
+            state.triggered_events.add(key)
+            state.log.append("MT3 demon event stats reset and teleported to MT2:3,8")
         elif state.floor_id == "MT2" and (x, y) == (11, 7):
             state.atk += round(state.atk * 0.03)
             state.defense += round(state.defense * 0.03)
@@ -468,19 +758,6 @@ class MotaSimulator:
         elif state.floor_id == "MT2" and (x, y) in {(1, 9), (10, 11)}:
             self.set_tile(state, x, y, 0)
             state.triggered_events.add(key)
-        elif state.floor_id == "MT3" and (x, y) == (5, 9):
-            state.hp, state.atk, state.defense = 400, 10, 10
-            state.mdef = 0
-            state.flags["03"] = 1
-            state.flags["nowWeapon"] = None
-            state.flags["nowShield"] = None
-            state.flags["魔法免疫"] = False
-            for px, py in [(5, 7), (5, 8), (4, 9), (6, 9), (5, 10), (5, 9)]:
-                self.set_tile(state, px, py, 0, "MT3")
-            state.floor_id, state.x, state.y = "MT2", 3, 8
-            state.visited_floors.add("MT2")
-            state.triggered_events.add(key)
-            state.log.append("MT3 plot reset to MT2:3,8 hp=400 atk=10 def=10")
         elif state.floor_id == "MT10" and (x, y) == (6, 5):
             self.trigger_mt10_trap(state)
             state.triggered_events.add(key)
@@ -545,7 +822,7 @@ class MotaSimulator:
             self.open_door(state, px, py, consume_key=False)
         self.set_tile(state, 6, 9, 0)
         state.flags["10f战胜骷髅队长"] = True
-        state.done = True
+        state.done = self.config.stop_on_boss
         state.log.append("defeated skeletonCaptain on MT10")
 
     def check_auto_events(self, state: MotaState) -> None:
@@ -581,44 +858,169 @@ class MotaSimulator:
         state.log.append(f"shop {kind} cost={cost} hp={state.hp} atk={state.atk} def={state.defense}")
         return True
 
-    def reachable_cells(self, state: MotaState) -> dict[tuple[int, int], list[Direction]]:
+    def merchant_offer(self, state: MotaState, x: int, y: int) -> dict[str, Any] | None:
+        if state.floor_id == "MT6" and (x, y) == (8, 4):
+            return {"cost": 50, "items": {"blueKey": 1}, "label": "buy blueKey"}
+        if state.floor_id == "MT7" and (x, y) == (6, 1):
+            return {"cost": 50, "items": {"yellowKey": 5}, "label": "buy 5 yellowKey"}
+        return None
+
+    def can_interact_npc(self, state: MotaState, x: int, y: int) -> bool:
+        offer = self.merchant_offer(state, x, y)
+        if offer is None:
+            return False
+        return state.money >= int(offer["cost"])
+
+    def trigger_npc_at(self, state: MotaState, x: int, y: int) -> bool:
+        offer = self.merchant_offer(state, x, y)
+        if offer is None:
+            return True
+        cost = int(offer["cost"])
+        if state.money < cost:
+            state.log.append(f"merchant failed {state.floor_id}:{x},{y} need={cost} money={state.money}")
+            return False
+        state.money -= cost
+        for item_id, amount in offer["items"].items():
+            state.items[item_id] = state.items.get(item_id, 0) + int(amount)
+        self.set_tile(state, x, y, 0)
+        state.triggered_events.add((state.floor_id, x, y))
+        state.log.append(f"merchant {offer['label']} cost={cost} at {state.floor_id}:{x},{y}")
+        return True
+
+    def _reachable_cache_key(self, state: MotaState) -> tuple[Any, ...]:
+        return (
+            state.floor_id,
+            state.x,
+            state.y,
+            self.floor_signature(state),
+        )
+
+    def reachable_parent_map(
+        self, state: MotaState
+    ) -> dict[tuple[int, int], tuple[tuple[int, int], Direction] | None]:
+        """Return BFS parents for reachable cells without reconstructing paths.
+
+        `macro_actions` calls this hot path at every search-tree expansion.  A
+        full path is only needed for actions that survive semantic filtering, so
+        keeping the parent map avoids constructing many unused path lists.
+        """
+
+        cache_key = self._reachable_cache_key(state)
+        if self.cache_enabled:
+            cached = self._reachable_parent_cache.get(cache_key)
+            if cached is not None:
+                self._cache_hits["reachable_parents"] += 1
+                return cached
+            self._cache_misses["reachable_parents"] += 1
         start = (state.x, state.y)
         queue = deque([start])
-        paths: dict[tuple[int, int], list[Direction]] = {start: []}
+        parents: dict[tuple[int, int], tuple[tuple[int, int], Direction] | None] = {start: None}
         while queue:
             x, y = queue.popleft()
             for direction, (dx, dy) in DIRS.items():
                 nx, ny = x + dx, y + dy
-                if (nx, ny) in paths:
+                if (nx, ny) in parents:
                     continue
                 tile = self.tile(state, nx, ny)
                 if self.is_wall_tile(tile) or self.is_door_tile(tile) or self.is_enemy_tile(tile):
                     continue
-                paths[(nx, ny)] = paths[(x, y)] + [direction]
-                # Treat stairs as terminal targets; moving through them changes floor.
-                if not self.is_stair_tile(tile):
+                parents[(nx, ny)] = ((x, y), direction)
+                # Treat stairs/NPCs as terminal targets; they trigger floor changes
+                # or interactions and should not be silently crossed in pathfinding.
+                if not self.is_stair_tile(tile) and not self.is_npc_tile(tile):
                     queue.append((nx, ny))
+        if self.cache_enabled:
+            if len(self._reachable_parent_cache) >= self.cache_limit:
+                self._reachable_parent_cache.clear()
+            self._reachable_parent_cache[cache_key] = parents
+        return parents
+
+    def reachable_path(
+        self,
+        state: MotaState,
+        cell: tuple[int, int],
+        parents: dict[tuple[int, int], tuple[tuple[int, int], Direction] | None] | None = None,
+    ) -> list[Direction]:
+        parents = parents if parents is not None else self.reachable_parent_map(state)
+        if cell not in parents:
+            raise KeyError(f"cell {cell} is not reachable on {state.floor_id}")
+        return _reconstruct_reachable_path(cell, parents)
+
+    def reachable_cells(self, state: MotaState) -> dict[tuple[int, int], list[Direction]]:
+        cache_key = self._reachable_cache_key(state)
+        if self.cache_enabled:
+            cached = self._reachable_cache.get(cache_key)
+            if cached is not None:
+                self._cache_hits["reachable"] += 1
+                return cached
+            self._cache_misses["reachable"] += 1
+        parents = self.reachable_parent_map(state)
+        paths: dict[tuple[int, int], list[Direction]] = {
+            cell: _reconstruct_reachable_path(cell, parents) for cell in parents
+        }
+        if self.cache_enabled:
+            if len(self._reachable_cache) >= self.cache_limit:
+                self._reachable_cache.clear()
+            self._reachable_cache[cache_key] = paths
         return paths
 
     def macro_actions(self, state: MotaState) -> list[dict[str, Any]]:
+        cache_key = (
+            state.floor_id,
+            state.x,
+            state.y,
+            state.hp,
+            state.atk,
+            state.defense,
+            state.mdef,
+            state.money,
+            tuple(sorted((key, value) for key, value in state.items.items() if value)),
+            tuple(sorted(item for item in state.triggered_events if item[0] == state.floor_id)),
+            self.config.enable_shop,
+            self.config.enable_fly,
+            self.config.allow_negative_hp,
+            self.config.min_hp,
+            self.floor_signature(state),
+        )
+        if self.cache_enabled:
+            cached = self._macro_actions_cache.get(cache_key)
+            if cached is not None:
+                self._cache_hits["macro_actions"] += 1
+                return cached
+            self._cache_misses["macro_actions"] += 1
         actions: list[dict[str, Any]] = []
-        reachable = self.reachable_cells(state)
-        for (x, y), path in reachable.items():
+        reachable_parents = self.reachable_parent_map(state)
+        path_cache: dict[tuple[int, int], list[Direction]] = {}
+
+        def path_to(cell: tuple[int, int]) -> list[Direction]:
+            path = path_cache.get(cell)
+            if path is None:
+                path = _reconstruct_reachable_path(cell, reachable_parents)
+                path_cache[cell] = path
+            return path
+
+        for x, y in reachable_parents:
             tile = self.tile(state, x, y)
+            event_enabled = (
+                f"{x},{y}" in self.data.floors[state.floor_id].get("events", {})
+                and (state.floor_id, x, y) not in state.triggered_events
+            )
             if (x, y) != (state.x, state.y) and (
                 self.is_item_tile(tile)
                 or self.is_stair_tile(tile)
-                or (
-                    f"{x},{y}" in self.data.floors[state.floor_id].get("events", {})
-                    and (state.floor_id, x, y) not in state.triggered_events
-                )
+                or event_enabled
+                or (self.is_npc_tile(tile) and self.can_interact_npc(state, x, y))
             ):
+                label_id = self.block_id(tile) or "event"
+                if self.is_npc_tile(tile):
+                    offer = self.merchant_offer(state, x, y)
+                    label_id = offer["label"] if offer else label_id
                 actions.append(
                     {
                         "kind": "move",
                         "target": [state.floor_id, x, y],
-                        "path": path,
-                        "label": f"go {self.block_id(tile) or 'event'} {state.floor_id}:{x},{y}",
+                        "path": path_to((x, y)),
+                        "label": f"go {label_id} {state.floor_id}:{x},{y}",
                     }
                 )
             for direction, (dx, dy) in DIRS.items():
@@ -629,7 +1031,7 @@ class MotaSimulator:
                         {
                             "kind": "move",
                             "target": [state.floor_id, nx, ny],
-                            "path": path + [direction],
+                            "path": path_to((x, y)) + [direction],
                             "label": f"open {self.block_id(ntile)} {state.floor_id}:{nx},{ny}",
                         }
                     )
@@ -638,15 +1040,11 @@ class MotaSimulator:
                         {
                             "kind": "move",
                             "target": [state.floor_id, nx, ny],
-                            "path": path + [direction],
+                            "path": path_to((x, y)) + [direction],
                             "label": f"fight {self.block_id(ntile)} {state.floor_id}:{nx},{ny}",
                         }
                     )
-        if (
-            self.config.enable_shop
-            and state.floor_id == "MT4"
-            and any(pos in reachable for pos in [(6, 1), (5, 1), (7, 1)])
-        ):
+        if self.config.enable_shop and state.floor_id == "MT4":
             for kind in ("atk", "def", "hp"):
                 if state.money >= self.shop_cost(state):
                     actions.append({"kind": "shop", "shop": kind, "path": [], "label": f"shop {kind}"})
@@ -678,20 +1076,32 @@ class MotaSimulator:
                             "label": f"fly shop {kind}",
                         }
                     )
-        # Remove duplicate path/target actions while preserving order.
-        seen: set[tuple[Any, ...]] = set()
-        unique = []
+        # Remove duplicate semantic targets while preserving order. A monster or
+        # door can be adjacent to several reachable cells, but all such macro
+        # actions lead to the same consumed target; keep the shortest path.
+        order: list[tuple[Any, ...]] = []
+        unique_by_key: dict[tuple[Any, ...], dict[str, Any]] = {}
         for action in actions:
             key = (
                 action["kind"],
                 tuple(action.get("target", [])),
+                action.get("floor"),
+                tuple(action.get("loc", [])),
                 action.get("shop"),
-                tuple(action.get("path", [])),
+                action.get("label"),
             )
-            if key not in seen:
-                seen.add(key)
-                unique.append(action)
-        return unique
+            previous = unique_by_key.get(key)
+            if previous is None:
+                order.append(key)
+                unique_by_key[key] = action
+            elif len(action.get("path", [])) < len(previous.get("path", [])):
+                unique_by_key[key] = action
+        result = [unique_by_key[key] for key in order]
+        if self.cache_enabled:
+            if len(self._macro_actions_cache) >= self.cache_limit:
+                self._macro_actions_cache.clear()
+            self._macro_actions_cache[cache_key] = result
+        return result
 
     def apply_macro_action(self, state: MotaState, action: dict[str, Any]) -> Transition:
         if action["kind"] == "shop":
@@ -712,26 +1122,7 @@ class MotaSimulator:
         return self.execute_path(state, action["path"])
 
     def state_key(self, state: MotaState) -> tuple[Any, ...]:
-        floors_compact = tuple(
-            (floor_id, tuple(tuple(row) for row in state.floors[floor_id]))
-            for floor_id in self.floor_order
-            if floor_id in state.floors
-        )
-        return (
-            state.floor_id,
-            state.x,
-            state.y,
-            state.hp,
-            state.atk,
-            state.defense,
-            state.mdef,
-            state.money,
-            state.exp,
-            tuple(sorted((k, v) for k, v in state.items.items() if v)),
-            tuple(sorted((k, str(v)) for k, v in state.flags.items() if v)),
-            tuple(sorted(state.triggered_events)),
-            floors_compact,
-        )
+        return self.fast_state_key(state)
 
     def dominance_key(self, state: MotaState) -> tuple[Any, ...]:
         floors_compact = tuple(
@@ -765,4 +1156,39 @@ class MotaSimulator:
             state.items.get("blueKey", 0),
             state.items.get("redKey", 0),
             -int(state.flags.get("times1", 0) or 0),
+        )
+
+    def describe_state(
+        self,
+        state: MotaState,
+        actions: list[dict[str, Any]] | None = None,
+        max_macro_actions: int = 256,
+    ) -> dict[str, Any]:
+        """Return a research-oriented feature snapshot for logging and RL."""
+
+        from .features import describe_state
+
+        return describe_state(self, state, actions=actions, max_macro_actions=max_macro_actions)
+
+    def trajectory_step_record(
+        self,
+        before: MotaState,
+        after: MotaState,
+        action: dict[str, Any],
+        transition: Transition,
+        index: int,
+        reward: float | None = None,
+    ) -> dict[str, Any]:
+        """Return a full before/after macro-action record."""
+
+        from .features import trajectory_step_record
+
+        return trajectory_step_record(
+            self,
+            before,
+            after,
+            action,
+            transition,
+            index,
+            reward=reward,
         )

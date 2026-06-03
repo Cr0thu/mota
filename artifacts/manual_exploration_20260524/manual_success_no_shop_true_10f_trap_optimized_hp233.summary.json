@@ -1,0 +1,114 @@
+{
+  "source": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_upperperm_best.jsonl",
+  "route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp233.jsonl",
+  "solved": true,
+  "final": {
+    "floor": "MT10",
+    "x": 6,
+    "y": 1,
+    "hp": 233,
+    "atk": 27,
+    "def": 27,
+    "mdef": 0,
+    "money": 262,
+    "keys": {
+      "yellowKey": 0,
+      "blueKey": 0,
+      "redKey": 0
+    },
+    "flags": {
+      "03": 1,
+      "8": 1,
+      "10f机关": true,
+      "10f战胜骷髅队长": true
+    },
+    "steps": 1761
+  },
+  "route_len": 244,
+  "removed": [
+    {
+      "pass": 1,
+      "index": 74,
+      "label": "go redGem MT9:6,5",
+      "old_hp": 233,
+      "new_hp": 233
+    },
+    {
+      "pass": 1,
+      "index": 105,
+      "label": "go yellowKey MT3:11,8",
+      "old_hp": 233,
+      "new_hp": 233
+    },
+    {
+      "pass": 1,
+      "index": 126,
+      "label": "go redGem MT8:4,10",
+      "old_hp": 233,
+      "new_hp": 233
+    },
+    {
+      "pass": 1,
+      "index": 127,
+      "label": "go blueGem MT8:5,11",
+      "old_hp": 233,
+      "new_hp": 233
+    },
+    {
+      "pass": 1,
+      "index": 140,
+      "label": "go blueGem MT1:7,4",
+      "old_hp": 233,
+      "new_hp": 233
+    },
+    {
+      "pass": 1,
+      "index": 140,
+      "label": "go redPotion MT1:8,4",
+      "old_hp": 233,
+      "new_hp": 233
+    },
+    {
+      "pass": 1,
+      "index": 179,
+      "label": "go redPotion MT8:1,5",
+      "old_hp": 233,
+      "new_hp": 233
+    },
+    {
+      "pass": 1,
+      "index": 185,
+      "label": "go yellowKey MT9:9,9",
+      "old_hp": 233,
+      "new_hp": 233
+    },
+    {
+      "pass": 1,
+      "index": 186,
+      "label": "go redPotion MT9:11,11",
+      "old_hp": 233,
+      "new_hp": 233
+    },
+    {
+      "pass": 1,
+      "index": 188,
+      "label": "go redPotion MT9:2,10",
+      "old_hp": 233,
+      "new_hp": 233
+    },
+    {
+      "pass": 1,
+      "index": 208,
+      "label": "go redKey MT8:10,2",
+      "old_hp": 233,
+      "new_hp": 233
+    },
+    {
+      "pass": 1,
+      "index": 243,
+      "label": "go event MT10:6,2",
+      "old_hp": 233,
+      "new_hp": 233
+    }
+  ]
+}

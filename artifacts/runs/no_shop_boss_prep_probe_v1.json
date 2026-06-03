@@ -1,0 +1,978 @@
+{
+  "route_out": "artifacts/expert/route_no_shop_boss_prep_probe_v1.jsonl",
+  "start_route": "artifacts/expert/route_no_shop_redkey_to_mt4_blue_v1.jsonl",
+  "expanded": 1031,
+  "generated": 1805,
+  "route_len": 330,
+  "continuation_len": 35,
+  "boss_ready": false,
+  "boss_required_damage": 634,
+  "boss_route_margin": -237,
+  "final": {
+    "floor": "MT9",
+    "x": 1,
+    "y": 10,
+    "hp": 397,
+    "atk": 27,
+    "def": 27,
+    "mdef": 0,
+    "money": 191,
+    "keys": {
+      "yellowKey": 0,
+      "blueKey": 0,
+      "redKey": 1
+    },
+    "flags": {
+      "03": 1,
+      "8": 1
+    },
+    "steps": 3264
+  },
+  "best_by_depth": [
+    {
+      "depth": 1,
+      "best": {
+        "floor": "MT3",
+        "x": 10,
+        "y": 11,
+        "hp": 358,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 177,
+        "keys": {
+          "yellowKey": 1,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2750
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -276,
+      "boss_ready": false,
+      "last_action": "go downFloor MT4:11,11"
+    },
+    {
+      "depth": 2,
+      "best": {
+        "floor": "MT2",
+        "x": 1,
+        "y": 10,
+        "hp": 358,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 177,
+        "keys": {
+          "yellowKey": 1,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2771
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -276,
+      "boss_ready": false,
+      "last_action": "go downFloor MT3:1,11"
+    },
+    {
+      "depth": 3,
+      "best": {
+        "floor": "MT1",
+        "x": 2,
+        "y": 1,
+        "hp": 358,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 177,
+        "keys": {
+          "yellowKey": 1,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2780
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -276,
+      "boss_ready": false,
+      "last_action": "go downFloor MT2:1,1"
+    },
+    {
+      "depth": 4,
+      "best": {
+        "floor": "MT3",
+        "x": 11,
+        "y": 1,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 180,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2765
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go redPotion MT3:11,1"
+    },
+    {
+      "depth": 5,
+      "best": {
+        "floor": "MT2",
+        "x": 1,
+        "y": 10,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 180,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2785
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT3:1,11"
+    },
+    {
+      "depth": 6,
+      "best": {
+        "floor": "MT1",
+        "x": 2,
+        "y": 1,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 180,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2794
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT2:1,1"
+    },
+    {
+      "depth": 7,
+      "best": {
+        "floor": "MT1",
+        "x": 2,
+        "y": 1,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 181,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2802
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT2:1,1"
+    },
+    {
+      "depth": 8,
+      "best": {
+        "floor": "MT1",
+        "x": 9,
+        "y": 11,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 182,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2823
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "fight greenSlime MT1:9,11"
+    },
+    {
+      "depth": 9,
+      "best": {
+        "floor": "MT1",
+        "x": 11,
+        "y": 11,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 183,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2825
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "fight greenSlime MT1:11,11"
+    },
+    {
+      "depth": 10,
+      "best": {
+        "floor": "MT1",
+        "x": 2,
+        "y": 1,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 182,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2846
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT2:1,1"
+    },
+    {
+      "depth": 11,
+      "best": {
+        "floor": "MT1",
+        "x": 2,
+        "y": 1,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 183,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2848
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT2:1,1"
+    },
+    {
+      "depth": 12,
+      "best": {
+        "floor": "MT2",
+        "x": 1,
+        "y": 10,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 183,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2857
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT3:1,11"
+    },
+    {
+      "depth": 13,
+      "best": {
+        "floor": "MT3",
+        "x": 10,
+        "y": 11,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 184,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2890
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT4:11,11"
+    },
+    {
+      "depth": 14,
+      "best": {
+        "floor": "MT2",
+        "x": 1,
+        "y": 10,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 184,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2911
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT3:1,11"
+    },
+    {
+      "depth": 15,
+      "best": {
+        "floor": "MT1",
+        "x": 2,
+        "y": 1,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 184,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2920
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT2:1,1"
+    },
+    {
+      "depth": 16,
+      "best": {
+        "floor": "MT1",
+        "x": 2,
+        "y": 1,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 185,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2948
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT2:1,1"
+    },
+    {
+      "depth": 17,
+      "best": {
+        "floor": "MT1",
+        "x": 9,
+        "y": 11,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 186,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2969
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "fight greenSlime MT1:9,11"
+    },
+    {
+      "depth": 18,
+      "best": {
+        "floor": "MT1",
+        "x": 11,
+        "y": 11,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 187,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2971
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "fight greenSlime MT1:11,11"
+    },
+    {
+      "depth": 19,
+      "best": {
+        "floor": "MT1",
+        "x": 2,
+        "y": 1,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 186,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2992
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT2:1,1"
+    },
+    {
+      "depth": 20,
+      "best": {
+        "floor": "MT1",
+        "x": 2,
+        "y": 1,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 187,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 2994
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT2:1,1"
+    },
+    {
+      "depth": 21,
+      "best": {
+        "floor": "MT2",
+        "x": 1,
+        "y": 10,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 188,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3045
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT3:1,11"
+    },
+    {
+      "depth": 22,
+      "best": {
+        "floor": "MT1",
+        "x": 2,
+        "y": 1,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 188,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3054
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT2:1,1"
+    },
+    {
+      "depth": 23,
+      "best": {
+        "floor": "MT1",
+        "x": 2,
+        "y": 1,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 189,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3068
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT2:1,1"
+    },
+    {
+      "depth": 24,
+      "best": {
+        "floor": "MT1",
+        "x": 9,
+        "y": 11,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 190,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3089
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "fight greenSlime MT1:9,11"
+    },
+    {
+      "depth": 25,
+      "best": {
+        "floor": "MT1",
+        "x": 11,
+        "y": 11,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 191,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3091
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "fight greenSlime MT1:11,11"
+    },
+    {
+      "depth": 26,
+      "best": {
+        "floor": "MT1",
+        "x": 2,
+        "y": 1,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 190,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3112
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT2:1,1"
+    },
+    {
+      "depth": 27,
+      "best": {
+        "floor": "MT1",
+        "x": 2,
+        "y": 1,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 191,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3114
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT2:1,1"
+    },
+    {
+      "depth": 28,
+      "best": {
+        "floor": "MT2",
+        "x": 1,
+        "y": 10,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 191,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3123
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT3:1,11"
+    },
+    {
+      "depth": 29,
+      "best": {
+        "floor": "MT3",
+        "x": 10,
+        "y": 11,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 191,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3144
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT4:11,11"
+    },
+    {
+      "depth": 30,
+      "best": {
+        "floor": "MT4",
+        "x": 1,
+        "y": 10,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 191,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3161
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT5:1,11"
+    },
+    {
+      "depth": 31,
+      "best": {
+        "floor": "MT5",
+        "x": 1,
+        "y": 2,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 191,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3184
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT6:1,1"
+    },
+    {
+      "depth": 32,
+      "best": {
+        "floor": "MT6",
+        "x": 11,
+        "y": 10,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 191,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3203
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT7:11,11"
+    },
+    {
+      "depth": 33,
+      "best": {
+        "floor": "MT7",
+        "x": 1,
+        "y": 2,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 191,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3232
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT8:1,1"
+    },
+    {
+      "depth": 34,
+      "best": {
+        "floor": "MT10",
+        "x": 1,
+        "y": 10,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 191,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3263
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go upFloor MT9:1,11"
+    },
+    {
+      "depth": 35,
+      "best": {
+        "floor": "MT9",
+        "x": 1,
+        "y": 10,
+        "hp": 397,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 191,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 1
+        },
+        "flags": {
+          "03": 1,
+          "8": 1
+        },
+        "steps": 3264
+      },
+      "boss_required_damage": 634,
+      "boss_route_margin": -237,
+      "boss_ready": false,
+      "last_action": "go downFloor MT10:1,11"
+    }
+  ]
+}

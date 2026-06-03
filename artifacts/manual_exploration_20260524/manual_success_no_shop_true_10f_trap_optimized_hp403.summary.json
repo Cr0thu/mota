@@ -1,0 +1,31 @@
+{
+  "route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp403.jsonl",
+  "solved": true,
+  "final_hp": 403,
+  "route_len": 317,
+  "objective_len": 195,
+  "source": "artifacts/manual_exploration_20260524/obsolete_expert_routes/optimization_probes_20260524_round9/manual_hp403_previous_7f_skeleton_first.jsonl",
+  "change": "On MT7, fight bluePriest/open blueDoor/fight redSlime before fighting skeleton MT7:9,5; keep skeleton before merchant for the required money/key branch.",
+  "final": {
+    "floor": "MT10",
+    "x": 6,
+    "y": 1,
+    "hp": 403,
+    "atk": 27,
+    "def": 27,
+    "mdef": 0,
+    "money": 262,
+    "keys": {
+      "yellowKey": 0,
+      "blueKey": 0,
+      "redKey": 0
+    },
+    "flags": {
+      "03": 1,
+      "8": 1,
+      "10f机关": true,
+      "10f战胜骷髅队长": true
+    },
+    "steps": 3311
+  }
+}

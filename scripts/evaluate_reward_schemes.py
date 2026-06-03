@@ -76,7 +76,9 @@ def greedy_episode(
                 continue
             breakdown = rewarder.score(sim, state, child, action, transition)
             revisit = sim.state_key(child) in visited_state_keys
-            candidates.append((breakdown.total, -int(revisit), action["label"], action, child, breakdown))
+            loop_penalty = greedy_loop_penalty(route, action, child, revisit)
+            score = breakdown.total - loop_penalty
+            candidates.append((score, -int(revisit), action["label"], action, child, breakdown))
         if not candidates:
             break
         candidates.sort(key=lambda item: (item[0], item[1], item[2]), reverse=True)
@@ -108,6 +110,34 @@ def greedy_episode(
         "final": state_summary(state),
         "route": route,
     }
+
+
+def greedy_loop_penalty(
+    route: list[dict[str, Any]],
+    action: dict[str, Any],
+    child,
+    revisit: bool,
+) -> float:
+    label = action.get("label", "")
+    if not ("upFloor" in label or "downFloor" in label):
+        return 1000.0 if revisit else 0.0
+    penalty = 0.0
+    if revisit:
+        penalty += 1000.0
+    if route:
+        last = route[-1]
+        last_label = last.get("action", {}).get("label", "")
+        last_before_floor = last.get("before", {}).get("floor")
+        if ("upFloor" in last_label or "downFloor" in last_label) and child.floor_id == last_before_floor:
+            penalty += 10_000.0
+    recent_floors = {
+        row.get("after", {}).get("floor")
+        for row in route[-4:]
+        if row.get("after")
+    }
+    if child.floor_id in recent_floors:
+        penalty += 250.0
+    return penalty
 
 
 def main() -> None:

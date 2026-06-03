@@ -10,6 +10,9 @@ rl = [
   "gymnasium>=0.29",
   "numpy>=1.24",
   "torch>=2.1",
+  "stable-baselines3>=2.3",
+  "sb3-contrib>=2.3",
+  "optuna>=3.6",
 ]
 test = [
   "pytest>=8.0",
@@ -22,4 +25,3 @@ pythonpath = ["src"]
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-

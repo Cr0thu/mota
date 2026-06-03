@@ -1,0 +1,69 @@
+{
+  "route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp375.jsonl",
+  "source": "artifacts/manual_exploration_20260524/manual_delay_4f_left_bat_after_redgem_with_5f_key_hp375.jsonl",
+  "base_route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp315.jsonl",
+  "solved": true,
+  "final_hp": 375,
+  "route_len": 315,
+  "primitive_steps": 3269,
+  "atk": 27,
+  "def": 27,
+  "constraints": {
+    "forbid_shop": true,
+    "forbid_fly": true,
+    "merchant_mt6_mt7_allowed": true
+  },
+  "targeted_changes": {
+    "early_4f_red_gem": true,
+    "do_not_fight_4f_left_bat_before_4f_redgem": true,
+    "use_5f_bat_key_for_yellow_key_circulation_before_4f_redgem": true,
+    "delayed_4f_left_bat_rows": [
+      {
+        "row": 21,
+        "label": "fight bat MT5:6,4"
+      },
+      {
+        "row": 22,
+        "label": "go yellowKey MT5:6,2"
+      },
+      {
+        "row": 25,
+        "label": "fight bluePriest MT4:8,9"
+      },
+      {
+        "row": 26,
+        "label": "go redGem MT4:7,10"
+      },
+      {
+        "row": 27,
+        "label": "fight bat MT4:4,9"
+      }
+    ],
+    "single_objective_prune_removed": 0
+  },
+  "bat_threshold_notes": {
+    "bat_stats": {
+      "hp": 35,
+      "atk": 38,
+      "def": 3
+    },
+    "damage_at_atk20_def10": 56,
+    "damage_at_atk21_def10": 28,
+    "4f_left_bat_before_fix_damage": 56,
+    "4f_left_bat_after_fix_damage": 28,
+    "note": "MT4:4,8 is still opened before sword because it is part of the path to MT4:1,11/MT5 sword, but MT4:4,9 bat is no longer fought before MT4 red gem."
+  },
+  "search": {
+    "manual_4f_redgem_probe_best_hp": 355,
+    "round6_from_hp355": {
+      "parallel_runs": 3,
+      "iterations_each": 1800,
+      "best_hp": 375
+    },
+    "round7_from_structural_fix": {
+      "parallel_runs": 3,
+      "iterations_each": 1600,
+      "best_hp": 375
+    }
+  }
+}

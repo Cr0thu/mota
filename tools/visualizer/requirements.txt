@@ -1,0 +1,10 @@
+numpy>=1.24
+Pillow>=9.5
+pandas>=1.5
+matplotlib>=3.5
+psutil>=5.9
+joblib>=1.2
+scikit-learn>=1.0
+
+# Needed only for PPO training/demo.
+torch>=2.1

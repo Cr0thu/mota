@@ -1,0 +1,61 @@
+# Deep Research 精读索引
+- [DR156 First Return, Then Explore](DR156_first_return_then_explore.md) - planner_core
+- [DR157 Agent57: Outperforming the Atari Human Benchmark](DR157_agent57_outperforming_the_atari_human_benchmark.md) - planner_core
+- [DR158 Width and Serialization of Classical Planning Problems](DR158_width_and_serialization_of_classical_planning_problems.md) - planner_core
+- [DR159 Best-First Width Search: Exploration and Exploitation in Classical Planning](DR159_best_first_width_search_exploration_and_exploitation_in_classical_plan.md) - planner_core
+- [DR160 Rollout IW: Width-based Planning with Rollouts](DR160_rollout_iw_width_based_planning_with_rollouts.md) - planner_core
+- [DR161 Planning with Pixels in Atari with IW](DR161_planning_with_pixels_in_atari_with_iw.md) - planner_core
+- [DR187 Resource Constrained Shortest Paths](DR187_resource_constrained_shortest_paths.md) - planner_core
+- [DR188 A Survey of Resource Constrained Shortest Path Problems](DR188_a_survey_of_resource_constrained_shortest_path_problems.md) - planner_core
+- [DR189 Planning with Numeric State Variables](DR189_planning_with_numeric_state_variables.md) - planner_core
+- [DR190 The Metric-FF Planning System](DR190_the_metric_ff_planning_system.md) - planner_core
+- [DR191 Fast Downward](DR191_fast_downward.md) - planner_core
+- [DR192 Landmarks, Critical Paths and Abstractions](DR192_landmarks_critical_paths_and_abstractions.md) - planner_core
+- [DR162 Policy-guided Heuristic Search with Guarantees](DR162_policy_guided_heuristic_search_with_guarantees.md) - learned_search
+- [DR163 Learning to Search Better than Your Teacher](DR163_learning_to_search_better_than_your_teacher.md) - learned_search
+- [DR164 Neural Guided Constraint Logic Programming for Program Synthesis](DR164_neural_guided_constraint_logic_programming_for_program_synthesis.md) - learned_search
+- [DR165 Learning Heuristics for Domain-Independent Planning](DR165_learning_heuristics_for_domain_independent_planning.md) - learned_search
+- [DR166 Neural A*: Learning Heuristic Functions for Path Planning](DR166_neural_a_learning_heuristic_functions_for_path_planning.md) - learned_search
+- [DR167 The Boxoban Level Collection](DR167_the_boxoban_level_collection.md) - learned_search
+- [DR168 Learning to Plan in High Dimensions via Neural Exploration-Exploitation Trees](DR168_learning_to_plan_in_high_dimensions_via_neural_exploration_exploitatio.md) - learned_search
+- [DR169 Sokoban and the Growth of the Search Space](DR169_sokoban_and_the_growth_of_the_search_space.md) - learned_search
+- [DR170 Solving Sokoban with Forward-Backward Reinforcement Learning](DR170_solving_sokoban_with_forward_backward_reinforcement_learning.md) - learned_search
+- [DR171 Thinking Like Transformers: Searchformer](DR171_thinking_like_transformers_searchformer.md) - learned_search
+- [DR094 Policy Invariance under Reward Transformations: Theory and Application to Reward Shaping](DR094_policy_invariance_under_reward_transformations_theory_and_application_.md) - reward_design
+- [DR095 Potential-Based Shaping and Q-Value Initialization are Equivalent](DR095_potential_based_shaping_and_q_value_initialization_are_equivalent.md) - reward_design
+- [DR096 Dynamic Potential-Based Reward Shaping](DR096_dynamic_potential_based_reward_shaping.md) - reward_design
+- [DR097 Potential-Based Reward Shaping for Reinforcement Learning in Multi-Agent Systems](DR097_potential_based_reward_shaping_for_reinforcement_learning_in_multi_age.md) - reward_design
+- [DR098 Reward Design via Online Gradient Ascent](DR098_reward_design_via_online_gradient_ascent.md) - reward_design
+- [DR099 Learning Intrinsic Rewards for Policy Gradient Methods](DR099_learning_intrinsic_rewards_for_policy_gradient_methods.md) - reward_design
+- [DR100 Learning to Incentivize Other Learning Agents](DR100_learning_to_incentivize_other_learning_agents.md) - reward_design
+- [DR132 Using Reward Machines for High-Level Task Specification and Decomposition in Reinforcement Learning](DR132_using_reward_machines_for_high_level_task_specification_and_decomposit.md) - reward_design
+- [DR133 Reward Machines: Exploiting Reward Function Structure in Reinforcement Learning](DR133_reward_machines_exploiting_reward_function_structure_in_reinforcement_.md) - reward_design
+- [DR136 Lifelong Reinforcement Learning with Temporal Logic Formulas and Reward Machines](DR136_lifelong_reinforcement_learning_with_temporal_logic_formulas_and_rewar.md) - reward_design
+- [DR138 Text2Reward: Reward Shaping with Language Models for Reinforcement Learning](DR138_text2reward_reward_shaping_with_language_models_for_reinforcement_lear.md) - reward_design
+- [DR139 Eureka: Human-Level Reward Design via Coding Large Language Models](DR139_eureka_human_level_reward_design_via_coding_large_language_models.md) - reward_design
+- [DR178 Policy Invariance under Reward Transformations](DR178_policy_invariance_under_reward_transformations.md) - reward_design
+- [DR179 Using Reward Machines for High-Level Task Specification and Decomposition](DR179_using_reward_machines_for_high_level_task_specification_and_decomposit.md) - reward_design
+- [DR180 Learning What to Do by Simulating the Past](DR180_learning_what_to_do_by_simulating_the_past.md) - reward_design
+- [DR181 Neural Combinatorial Optimization with Reinforcement Learning](DR181_neural_combinatorial_optimization_with_reinforcement_learning.md) - graph_q_model
+- [DR182 Attention, Learn to Solve Routing Problems!](DR182_attention_learn_to_solve_routing_problems.md) - graph_q_model
+- [DR183 Learning Combinatorial Optimization Algorithms over Graphs](DR183_learning_combinatorial_optimization_algorithms_over_graphs.md) - graph_q_model
+- [DR184 Graph Attention Networks](DR184_graph_attention_networks.md) - graph_q_model
+- [DR172 Deep Q-learning from Demonstrations](DR172_deep_q_learning_from_demonstrations.md) - hp403_ablation
+- [DR173 Self-Imitation Learning](DR173_self_imitation_learning.md) - hp403_ablation
+- [DR174 AWAC: Accelerating Online RL with Offline Datasets](DR174_awac_accelerating_online_rl_with_offline_datasets.md) - hp403_ablation
+- [DR175 Offline Reinforcement Learning with Implicit Q-Learning](DR175_offline_reinforcement_learning_with_implicit_q_learning.md) - hp403_ablation
+- [DR176 Conservative Q-Learning for Offline Reinforcement Learning](DR176_conservative_q_learning_for_offline_reinforcement_learning.md) - hp403_ablation
+- [DR177 Decision Transformer](DR177_decision_transformer.md) - hp403_ablation
+- [DR001 Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm](DR001_mastering_chess_and_shogi_by_self_play_with_a_general_reinforcement_le.md) - future_world_model
+- [DR002 Mastering the Game of Go without Human Knowledge](DR002_mastering_the_game_of_go_without_human_knowledge.md) - future_world_model
+- [DR003 Mastering Atari with Deep Reinforcement Learning](DR003_mastering_atari_with_deep_reinforcement_learning.md) - background
+- [DR004 Human-level Control through Deep Reinforcement Learning](DR004_human_level_control_through_deep_reinforcement_learning.md) - background
+- [DR005 Deep Reinforcement Learning with Double Q-learning](DR005_deep_reinforcement_learning_with_double_q_learning.md) - background
+- [DR006 Dueling Network Architectures for Deep Reinforcement Learning](DR006_dueling_network_architectures_for_deep_reinforcement_learning.md) - background
+- [DR007 Prioritized Experience Replay](DR007_prioritized_experience_replay.md) - background
+- [DR008 Noisy Networks for Exploration](DR008_noisy_networks_for_exploration.md) - background
+- [DR009 A Distributional Perspective on Reinforcement Learning](DR009_a_distributional_perspective_on_reinforcement_learning.md) - background
+- [DR010 Rainbow Combining Improvements in Deep Reinforcement Learning](DR010_rainbow_combining_improvements_in_deep_reinforcement_learning.md) - background
+- [DR011 Beyond the Rainbow High Performance Deep Reinforcement Learning on a Desktop PC](DR011_beyond_the_rainbow_high_performance_deep_reinforcement_learning_on_a_d.md) - background
+- [DR012 Mastering Atari Go Chess and Shogi by Planning with a Learned Model](DR012_mastering_atari_go_chess_and_shogi_by_planning_with_a_learned_model.md) - future_world_model
+- [DR013 Learning and Planning in Complex Action Spaces](DR013_learning_and_planning_in_complex_action_spaces.md) - future_world_model

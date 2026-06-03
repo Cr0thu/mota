@@ -6,11 +6,24 @@ __pycache__/
 .mypy_cache/
 .venv/
 venv/
+output/
+tmp/
 
 # OS/editor
 .DS_Store
 .idea/
 .vscode/
+
+# LaTeX build byproducts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
 
 # Local game assets and copyrighted/original binaries.
 game/
@@ -23,6 +36,25 @@ paper/pdfs/
 artifacts/runs/*
 !artifacts/runs/*.md
 !artifacts/runs/reward_scheme_eval.json
+artifacts/archive/
+artifacts/tmp/
+artifacts/expert/archive_stale_*/
+artifacts/manual_exploration_20260524/obsolete_expert_routes/
+artifacts/expert/**/*.jsonl
+artifacts/stage_dataset/**/*.jsonl
+artifacts/search_traces/**/*.jsonl
+artifacts/trajectories/**/*.jsonl
+!artifacts/search_traces/.gitkeep
+!artifacts/stage_dataset/.gitkeep
+!artifacts/trajectories/.gitkeep
+!artifacts/expert/route_no_shop_to_redkey_v1.jsonl
+!artifacts/expert/route_no_shop_redkey_to_mt4_blue_v1.jsonl
+!artifacts/expert/route_no_shop_redkey_to_hp397_v1.jsonl
+!artifacts/expert/route_no_shop_boss_prep_probe_v1.jsonl
+!artifacts/runs/no_shop_to_redkey_v1.json
+!artifacts/runs/no_shop_redkey_to_mt4_blue_v1.json
+!artifacts/runs/no_shop_redkey_to_hp397_v1.json
+!artifacts/runs/no_shop_boss_prep_probe_v1.json
 
 # Future model/checkpoint artifacts.
 *.pt

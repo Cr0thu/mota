@@ -1,0 +1,64 @@
+{
+  "route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp315.jsonl",
+  "source": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp315_shield_priority.jsonl",
+  "base_route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp299.jsonl",
+  "solved": true,
+  "final_hp": 315,
+  "route_len": 313,
+  "atk": 27,
+  "def": 27,
+  "constraints": {
+    "forbid_shop": true,
+    "forbid_fly": true,
+    "merchant_mt6_mt7_allowed": true
+  },
+  "search": {
+    "round4_from_hp299": {
+      "parallel_runs": 4,
+      "iterations_each": 2500,
+      "best_hp": 302
+    },
+    "round4_from_hp302": {
+      "parallel_runs": 3,
+      "iterations_each": 1800,
+      "best_hp": 315
+    },
+    "round4_from_hp315": {
+      "parallel_runs": 3,
+      "iterations_each": 1200,
+      "best_hp": 315,
+      "best_len": 313
+    },
+    "extra_target_insert_scan": {
+      "tried": 3213,
+      "solved": 2341,
+      "best_hp": 302
+    },
+    "final_prune_removed": 0
+  },
+  "primitive_steps": 3245,
+  "shield_priority_adjustment": {
+    "shield_row": 72,
+    "shield_hp": 374,
+    "shield_atk": 20,
+    "shield_def_before": 10,
+    "shield_def_after": 20,
+    "moved_shield_objective_from": 65,
+    "moved_shield_objective_to": 63,
+    "final_hp_delta": 0,
+    "primitive_steps_delta": -6
+  },
+  "bat_threshold_notes": {
+    "bat_stats": {
+      "hp": 35,
+      "atk": 38,
+      "def": 3
+    },
+    "atk_20_def_10_damage": 56,
+    "atk_21_def_20_damage": 18,
+    "pre_shield_bat_count": 4,
+    "pre_shield_bat_damage_total": 224,
+    "single_gem_move_scan": "no red/blue gem objective could be moved earlier alone while preserving solvability",
+    "shield_stage_solver_best_hp_observed": 199
+  }
+}

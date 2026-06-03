@@ -1,0 +1,62 @@
+{
+  "Codex-guided hp403": {
+    "floor": "MT10",
+    "x": 6,
+    "y": 1,
+    "hp": 403,
+    "atk": 27,
+    "def": 27,
+    "mdef": 0,
+    "money": 262,
+    "keys": {
+      "yellowKey": 0,
+      "blueKey": 0,
+      "redKey": 0
+    },
+    "flags": {
+      "03": 1,
+      "8": 1,
+      "10f机关": true,
+      "10f战胜骷髅队长": true
+    },
+    "steps": 3311
+  },
+  "Self-generated sword": {
+    "floor": "MT5",
+    "x": 11,
+    "y": 11,
+    "hp": 754,
+    "atk": 20,
+    "def": 10,
+    "mdef": 0,
+    "money": 14,
+    "keys": {
+      "yellowKey": 1,
+      "blueKey": 1,
+      "redKey": 0
+    },
+    "flags": {
+      "03": 1
+    },
+    "steps": 85
+  },
+  "Self-generated shield": {
+    "floor": "MT9",
+    "x": 9,
+    "y": 7,
+    "hp": 72,
+    "atk": 20,
+    "def": 20,
+    "mdef": 0,
+    "money": 27,
+    "keys": {
+      "yellowKey": 0,
+      "blueKey": 0,
+      "redKey": 0
+    },
+    "flags": {
+      "03": 1
+    },
+    "steps": 351
+  }
+}

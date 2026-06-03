@@ -1,0 +1,34 @@
+{
+  "route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp299.jsonl",
+  "source": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_round3_seed31_best.jsonl",
+  "base_route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp280.jsonl",
+  "solved": true,
+  "final_hp": 299,
+  "route_len": 301,
+  "atk": 27,
+  "def": 27,
+  "constraints": {
+    "forbid_shop": true,
+    "forbid_fly": true,
+    "merchant_mt6_mt7_allowed": true
+  },
+  "search": {
+    "round3_smoke_iterations": 100,
+    "round3_first_generation": {
+      "parallel_runs": 4,
+      "iterations_each": 3000,
+      "best_hp": 294
+    },
+    "round3_second_generation": {
+      "parallel_runs": 4,
+      "iterations_each": 2000,
+      "best_hp": 297
+    },
+    "round3_third_generation": {
+      "parallel_runs": 3,
+      "iterations_each": 1500,
+      "best_hp": 299
+    },
+    "pruned_objectives_removed": 1
+  }
+}

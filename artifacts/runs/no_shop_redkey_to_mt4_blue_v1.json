@@ -1,0 +1,29 @@
+{
+  "route_out": "artifacts/expert/route_no_shop_redkey_to_mt4_blue_v1.jsonl",
+  "route_len": 295,
+  "final": {
+    "floor": "MT4",
+    "x": 9,
+    "y": 2,
+    "hp": 358,
+    "atk": 27,
+    "def": 27,
+    "mdef": 0,
+    "money": 177,
+    "keys": {
+      "yellowKey": 1,
+      "blueKey": 0,
+      "redKey": 1
+    },
+    "flags": {
+      "03": 1,
+      "8": 1
+    },
+    "steps": 2725
+  },
+  "captain": {
+    "damage": 304,
+    "turn": 9
+  },
+  "boss_ready": true
+}

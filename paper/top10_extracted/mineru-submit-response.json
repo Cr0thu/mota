@@ -1,0 +1,20 @@
+{
+  "code": 0,
+  "msg": "ok",
+  "trace_id": "fcad29148ac671e8f3e8dc0cc649b751",
+  "data": {
+    "batch_id": "12c2e9f6-2f16-4b26-8ac7-58ba48f8b5c8",
+    "file_urls": [
+      "https://mineru.oss-cn-shanghai.aliyuncs.com/api-upload/extract/2026-05-13/12c2e9f6-2f16-4b26-8ac7-58ba48f8b5c8/8f5b7470-148c-4bf6-8a28-6ec6918a4fe4.pdf?Expires=1778695730&OSSAccessKeyId=LTAI5t8fSGMgiRhQn4mpp926&Signature=HKfMBQPbUZz0aeIpwSjArhLRqhI%3D",
+      "https://mineru.oss-cn-shanghai.aliyuncs.com/api-upload/extract/2026-05-13/12c2e9f6-2f16-4b26-8ac7-58ba48f8b5c8/fe1f77d0-6d73-433d-b692-f1d316c3ee0a.pdf?Expires=1778695730&OSSAccessKeyId=LTAI5t8fSGMgiRhQn4mpp926&Signature=LRpQuk28WyzNiUCGTvgFUDj4kD8%3D",
+      "https://mineru.oss-cn-shanghai.aliyuncs.com/api-upload/extract/2026-05-13/12c2e9f6-2f16-4b26-8ac7-58ba48f8b5c8/7652454d-4cd6-459f-8cec-c23ff3ac2064.pdf?Expires=1778695730&OSSAccessKeyId=LTAI5t8fSGMgiRhQn4mpp926&Signature=shFPvfPN9PZ%2BTIItapsqBkt2iMQ%3D",
+      "https://mineru.oss-cn-shanghai.aliyuncs.com/api-upload/extract/2026-05-13/12c2e9f6-2f16-4b26-8ac7-58ba48f8b5c8/e90c2305-cb12-494b-b2dd-3c01c263b442.pdf?Expires=1778695730&OSSAccessKeyId=LTAI5t8fSGMgiRhQn4mpp926&Signature=LuUfsH47M5T2ltY%2F%2FT%2BEax4rXMg%3D",
+      "https://mineru.oss-cn-shanghai.aliyuncs.com/api-upload/extract/2026-05-13/12c2e9f6-2f16-4b26-8ac7-58ba48f8b5c8/e89278eb-293f-4f8f-9567-1c47210f6265.pdf?Expires=1778695730&OSSAccessKeyId=LTAI5t8fSGMgiRhQn4mpp926&Signature=mlUzH6Ophdcv68B10XWSOIPzO%2Fc%3D",
+      "https://mineru.oss-cn-shanghai.aliyuncs.com/api-upload/extract/2026-05-13/12c2e9f6-2f16-4b26-8ac7-58ba48f8b5c8/b058a89f-17b9-4c62-bef5-9681b9baa3fe.pdf?Expires=1778695730&OSSAccessKeyId=LTAI5t8fSGMgiRhQn4mpp926&Signature=Vb06mGqCIfdxDAM5FWJkHro7a40%3D",
+      "https://mineru.oss-cn-shanghai.aliyuncs.com/api-upload/extract/2026-05-13/12c2e9f6-2f16-4b26-8ac7-58ba48f8b5c8/a56b0730-5b6b-4e30-b5ed-2802d75d3775.pdf?Expires=1778695730&OSSAccessKeyId=LTAI5t8fSGMgiRhQn4mpp926&Signature=2YJsvSXdXNcRTq4Sr1%2BFK7erLx0%3D",
+      "https://mineru.oss-cn-shanghai.aliyuncs.com/api-upload/extract/2026-05-13/12c2e9f6-2f16-4b26-8ac7-58ba48f8b5c8/328f0a48-f452-49df-a990-1c8a991608c2.pdf?Expires=1778695730&OSSAccessKeyId=LTAI5t8fSGMgiRhQn4mpp926&Signature=WueDOX%2BmuxMeE8S3ak7hQhaq%2F80%3D",
+      "https://mineru.oss-cn-shanghai.aliyuncs.com/api-upload/extract/2026-05-13/12c2e9f6-2f16-4b26-8ac7-58ba48f8b5c8/3e8dbb9a-8f83-4ff5-b5df-e8c481725055.pdf?Expires=1778695730&OSSAccessKeyId=LTAI5t8fSGMgiRhQn4mpp926&Signature=bBLJkd6s5EaApFN0IUCO2XRu08g%3D",
+      "https://mineru.oss-cn-shanghai.aliyuncs.com/api-upload/extract/2026-05-13/12c2e9f6-2f16-4b26-8ac7-58ba48f8b5c8/47665c91-9d49-43e2-8a2f-a79eff3cb1fd.pdf?Expires=1778695730&OSSAccessKeyId=LTAI5t8fSGMgiRhQn4mpp926&Signature=5SlYa5B64Y01Ox5EaO6nSOBsiuY%3D"
+    ]
+  }
+}

@@ -1,0 +1,552 @@
+{
+  "data": "artifacts/data/mota_first10.json",
+  "root": "artifacts",
+  "route_count": 16,
+  "unique_route_count": 9,
+  "routes": [
+    {
+      "route": "artifacts/expert/route_alpha_redkey_buffer_fixed_hp436_20260530.jsonl",
+      "rows": 291,
+      "applied_steps": 291,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 436,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 2825
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": false,
+      "final_hp": 436,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp403.jsonl",
+      "rows": 317,
+      "applied_steps": 317,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 403,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 3311
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": false,
+      "final_hp": 403,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp375.jsonl",
+      "rows": 315,
+      "applied_steps": 315,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 375,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 3269
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": false,
+      "final_hp": 375,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp315.jsonl",
+      "rows": 313,
+      "applied_steps": 313,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 315,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 3245
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": false,
+      "final_hp": 315,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp299.jsonl",
+      "rows": 301,
+      "applied_steps": 301,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 299,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 2965
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": false,
+      "final_hp": 299,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp280.jsonl",
+      "rows": 280,
+      "applied_steps": 280,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 280,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 2545
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": false,
+      "final_hp": 280,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp233.jsonl",
+      "rows": 244,
+      "applied_steps": 244,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 233,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 1761
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": false,
+      "final_hp": 233,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/expert/route_alpha4090_boss_success_hp125_20260531.jsonl",
+      "rows": 245,
+      "applied_steps": 245,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 125,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 251,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 1931
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": false,
+      "final_hp": 125,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap.jsonl",
+      "rows": 270,
+      "applied_steps": 270,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 6,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 1951
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": false,
+      "final_hp": 6,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/expert/route_alphazero_warmstart_hp436_20260601.jsonl",
+      "rows": 291,
+      "applied_steps": 291,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 436,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 2825
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": true,
+      "final_hp": 436,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/expert/route_best_bosskill_hp436_len293_20260530.jsonl",
+      "rows": 293,
+      "applied_steps": 291,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 436,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 2825
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": true,
+      "final_hp": 436,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/runs/4090_alphazero_selfplay_from_hp436_d128_20260601/selfplay_boss/best_route.jsonl",
+      "rows": 291,
+      "applied_steps": 291,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 436,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 2825
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": true,
+      "final_hp": 436,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/runs/4090_alphazero_warmstart_matrix_20260601/hp436_boss_d128_prior/eval/boss_az_route.jsonl",
+      "rows": 291,
+      "applied_steps": 291,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 436,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 2825
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": true,
+      "final_hp": 436,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/runs/4090_ge_mcts_potential_20260602_0048/hp403_potential/hp403_replay.jsonl",
+      "rows": 317,
+      "applied_steps": 317,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 403,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 3311
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": true,
+      "final_hp": 403,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/runs/4090_hp403_potential_only_20260602_014602/reward/hp403_replay.jsonl",
+      "rows": 317,
+      "applied_steps": 317,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 403,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 3311
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": true,
+      "final_hp": 403,
+      "final_atk": 27,
+      "final_def": 27
+    },
+    {
+      "route": "artifacts/runs/4090_hp403_potential_strict_only_20260602_020615/reward/hp403_replay.jsonl",
+      "rows": 317,
+      "applied_steps": 317,
+      "solved": true,
+      "failed": null,
+      "final": {
+        "floor": "MT10",
+        "x": 6,
+        "y": 1,
+        "hp": 403,
+        "atk": 27,
+        "def": 27,
+        "mdef": 0,
+        "money": 262,
+        "keys": {
+          "yellowKey": 0,
+          "blueKey": 0,
+          "redKey": 0
+        },
+        "flags": {
+          "03": 1,
+          "8": 1,
+          "10f机关": true,
+          "10f战胜骷髅队长": true
+        },
+        "steps": 3311
+      },
+      "constraints_ok": true,
+      "duplicate_action_sequence": true,
+      "final_hp": 403,
+      "final_atk": 27,
+      "final_def": 27
+    }
+  ]
+}

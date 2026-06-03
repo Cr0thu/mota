@@ -12,7 +12,7 @@ P010,Rainbow Combining Improvements in Deep Reinforcement Learning,2017,Rainbow,
 P011,Beyond the Rainbow High Performance Deep Reinforcement Learning on a Desktop PC,2024,BTR,https://arxiv.org/abs/2411.03820,url_recorded
 P012,Mastering Atari Go Chess and Shogi by Planning with a Learned Model,2019,MuZero,https://arxiv.org/abs/1911.08265,url_recorded
 P013,Learning and Planning in Complex Action Spaces,2021,Sampled MuZero,https://arxiv.org/abs/2104.06303,url_recorded
-P014,Policy Improvement by Planning with Gumbel,2021,Gumbel MuZero,https://arxiv.org/abs/2111.03157,url_recorded
+P014,Policy Improvement by Planning with Gumbel,2021,Gumbel MuZero,https://openreview.net/forum?id=bERaNdoegnO,url_recorded
 P015,EfficientZero Mastering Atari Games with Limited Data,2021,EfficientZero,https://arxiv.org/abs/2111.00210,url_recorded
 P016,UniZero Generalized and Efficient Planning with Scalable Latent World Models,2024,UniZero,https://arxiv.org/abs/2406.10667,url_recorded
 P017,Thinker Learning to Plan and Act,2023,Thinker,https://arxiv.org/abs/2307.14993,url_recorded

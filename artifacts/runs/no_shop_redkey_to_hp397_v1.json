@@ -1,0 +1,31 @@
+{
+  "route_out": "artifacts/expert/route_no_shop_redkey_to_hp397_v1.jsonl",
+  "route_len": 306,
+  "final": {
+    "floor": "MT10",
+    "x": 1,
+    "y": 10,
+    "hp": 397,
+    "atk": 27,
+    "def": 27,
+    "mdef": 0,
+    "money": 180,
+    "keys": {
+      "yellowKey": 0,
+      "blueKey": 0,
+      "redKey": 1
+    },
+    "flags": {
+      "03": 1,
+      "8": 1
+    },
+    "steps": 2901
+  },
+  "boss_required_damage": 634,
+  "boss_route_margin": -237,
+  "boss_ready": false,
+  "captain": {
+    "damage": 304,
+    "turn": 9
+  }
+}

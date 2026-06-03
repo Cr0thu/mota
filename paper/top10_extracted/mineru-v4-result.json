@@ -1,0 +1,80 @@
+{
+  "code": 0,
+  "msg": "ok",
+  "trace_id": "fd403e6915db0dacd990c55d986e8ea5",
+  "data": {
+    "batch_id": "12c2e9f6-2f16-4b26-8ac7-58ba48f8b5c8",
+    "extract_result": [
+      {
+        "data_id": "01_pbrs_ng_harada_russell_1999",
+        "file_name": "01_pbrs_ng_harada_russell_1999.pdf",
+        "state": "done",
+        "err_msg": "",
+        "full_zip_url": "https://cdn-mineru.openxlab.org.cn/pdf/2026-05-13/d7af3249-0b25-41e1-a510-1e7f148a2668.zip"
+      },
+      {
+        "data_id": "02_pgrd_sorg_lewis_singh_2010",
+        "file_name": "02_pgrd_sorg_lewis_singh_2010.pdf",
+        "state": "done",
+        "err_msg": "",
+        "full_zip_url": "https://cdn-mineru.openxlab.org.cn/pdf/2026-05-13/f543df0d-d935-4080-90a1-d0c205595506.zip"
+      },
+      {
+        "data_id": "03_rudder_1806.07857",
+        "file_name": "03_rudder_1806.07857.pdf",
+        "state": "done",
+        "err_msg": "",
+        "full_zip_url": "https://cdn-mineru.openxlab.org.cn/pdf/2026-05-13/b597d348-1923-4390-9f0d-a13965c1a37b.zip"
+      },
+      {
+        "data_id": "04_searchformer_2402.14083",
+        "file_name": "04_searchformer_2402.14083.pdf",
+        "state": "done",
+        "err_msg": "",
+        "full_zip_url": "https://cdn-mineru.openxlab.org.cn/pdf/2026-05-13/736058d7-cfa0-4bda-93a1-9073e3850b6a.zip"
+      },
+      {
+        "data_id": "05_halfweg_2504.04366",
+        "file_name": "05_halfweg_2504.04366.pdf",
+        "state": "done",
+        "err_msg": "",
+        "full_zip_url": "https://cdn-mineru.openxlab.org.cn/pdf/2026-05-13/6b63aa12-5c52-4aca-b4ec-e96aae2a09da.zip"
+      },
+      {
+        "data_id": "06_path_channels_aAshH4kQ1v",
+        "file_name": "06_path_channels_aAshH4kQ1v.pdf",
+        "state": "done",
+        "err_msg": "",
+        "full_zip_url": "https://cdn-mineru.openxlab.org.cn/pdf/2026-05-13/80673220-4357-4cc1-9d5d-cc02abb54290.zip"
+      },
+      {
+        "data_id": "07_muzero_1911.08265",
+        "file_name": "07_muzero_1911.08265.pdf",
+        "state": "done",
+        "err_msg": "",
+        "full_zip_url": "https://cdn-mineru.openxlab.org.cn/pdf/2026-05-13/a941e957-ee7f-4026-afcc-801058c47dc0.zip"
+      },
+      {
+        "data_id": "08_gumbel_muzero_bERaNdoegnO",
+        "file_name": "08_gumbel_muzero_bERaNdoegnO.pdf",
+        "state": "done",
+        "err_msg": "",
+        "full_zip_url": "https://cdn-mineru.openxlab.org.cn/pdf/2026-05-13/d8a6b076-9ebd-440b-82d9-06ef28c3719a.zip"
+      },
+      {
+        "data_id": "09_thinker_2307.14993",
+        "file_name": "09_thinker_2307.14993.pdf",
+        "state": "done",
+        "err_msg": "",
+        "full_zip_url": "https://cdn-mineru.openxlab.org.cn/pdf/2026-05-13/adc15dfa-8b73-4e5d-ac2c-787ae696faae.zip"
+      },
+      {
+        "data_id": "10_unizero_2406.10667",
+        "file_name": "10_unizero_2406.10667.pdf",
+        "state": "done",
+        "err_msg": "",
+        "full_zip_url": "https://cdn-mineru.openxlab.org.cn/pdf/2026-05-13/433bdea9-22c3-4ff8-ba4c-674589c1100a.zip"
+      }
+    ]
+  }
+}

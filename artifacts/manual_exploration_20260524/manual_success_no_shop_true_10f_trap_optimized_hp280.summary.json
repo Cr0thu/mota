@@ -1,0 +1,29 @@
+{
+  "source": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_randomlocal_best.jsonl",
+  "route": "artifacts/manual_exploration_20260524/manual_success_no_shop_true_10f_trap_optimized_hp280.jsonl",
+  "solved": true,
+  "final": {
+    "floor": "MT10",
+    "x": 6,
+    "y": 1,
+    "hp": 280,
+    "atk": 27,
+    "def": 27,
+    "mdef": 0,
+    "money": 262,
+    "keys": {
+      "yellowKey": 0,
+      "blueKey": 0,
+      "redKey": 0
+    },
+    "flags": {
+      "03": 1,
+      "8": 1,
+      "10f机关": true,
+      "10f战胜骷髅队长": true
+    },
+    "steps": 2545
+  },
+  "route_len": 280,
+  "removed": []
+}
