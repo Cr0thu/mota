@@ -21,8 +21,9 @@ Use `--forbid-merchants` only for the stricter variant that also bans the MT6/MT
 
 | Route | Purpose | Current result |
 | --- | --- | --- |
+| `route_best_bosskill_hp636_len293_20260603.jsonl` | Best current first-10-floor route for visualizer replay and benchmark comparison | Stop-on-boss replay defeats the 10F skeleton captain with HP 436; full `--continue-after-boss` replay ends with HP 636, ATK 30, DEF 30, and 3 yellow keys remaining |
 | `route_mt10_resources_manual_refill_success_20260524.jsonl` | Current playable route to 10F resource completion | Replays successfully; reaches MT10 with HP 248, ATK 27, DEF 27 after taking 10F blue gem, red gem, and blue potion |
 
-Current blocker: this route proves 10F resource collection is feasible, but it does not yet defeat the skeleton captain.
+Current research blocker: the best route is available as a benchmark and visualizer artifact, but the pure search/RL line has not yet rediscovered a full strict route without successful-route warm-start data.
 
 Obsolete and invalid routes were moved to `artifacts/expert/archive_stale_20260524/`.

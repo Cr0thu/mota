@@ -51,6 +51,7 @@ artifacts/trajectories/**/*.jsonl
 !artifacts/expert/route_no_shop_redkey_to_mt4_blue_v1.jsonl
 !artifacts/expert/route_no_shop_redkey_to_hp397_v1.jsonl
 !artifacts/expert/route_no_shop_boss_prep_probe_v1.jsonl
+!artifacts/expert/route_best_bosskill_hp636_len293_20260603.jsonl
 !artifacts/runs/no_shop_to_redkey_v1.json
 !artifacts/runs/no_shop_redkey_to_mt4_blue_v1.json
 !artifacts/runs/no_shop_redkey_to_hp397_v1.json
