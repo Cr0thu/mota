@@ -51,7 +51,12 @@ artifacts/trajectories/**/*.jsonl
 !artifacts/expert/route_no_shop_redkey_to_mt4_blue_v1.jsonl
 !artifacts/expert/route_no_shop_redkey_to_hp397_v1.jsonl
 !artifacts/expert/route_no_shop_boss_prep_probe_v1.jsonl
+!artifacts/expert/route_alpha4090_boss_success_hp125_20260531.jsonl
+!artifacts/expert/route_alpha_redkey_buffer_fixed_hp436_20260530.jsonl
+!artifacts/expert/route_alphazero_warmstart_hp436_20260601.jsonl
+!artifacts/expert/route_best_bosskill_hp436_len293_20260530.jsonl
 !artifacts/expert/route_best_bosskill_hp636_len293_20260603.jsonl
+!artifacts/expert/route_mt10_resources_manual_refill_success_20260524.jsonl
 !artifacts/runs/no_shop_to_redkey_v1.json
 !artifacts/runs/no_shop_redkey_to_mt4_blue_v1.json
 !artifacts/runs/no_shop_redkey_to_hp397_v1.json
