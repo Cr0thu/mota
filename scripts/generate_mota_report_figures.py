@@ -559,20 +559,52 @@ def plot_agentic_route_summary() -> None:
 
 
 def plot_experiment_summary() -> None:
-    plt.rcParams.update({"axes.titleweight": "bold"})
-    fig, axes = plt.subplots(1, 3, figsize=(11.2, 3.15), constrained_layout=True)
+    plt.rcParams.update(
+        {
+            "axes.titleweight": "bold",
+            "axes.titlesize": 11.5,
+            "axes.labelsize": 9.5,
+            "xtick.labelsize": 8.5,
+            "ytick.labelsize": 8.5,
+            "legend.fontsize": 8.5,
+        }
+    )
+    fig, axes = plt.subplots(
+        1,
+        3,
+        figsize=(11.4, 3.35),
+        constrained_layout=True,
+        gridspec_kw={"width_ratios": [1.0, 1.25, 1.35]},
+    )
 
     # Panel A: potential ranking quality.
     ax = axes[0]
-    labels = ["Top-1", "Top-3"]
+    labels = ["rank@1", "rank@3"]
     values = [52.1, 85.8]
-    ax.bar(labels, values, color=["#5576a4", "#7b8f63"], width=0.55)
-    ax.axhline(50, color="#9aa4b2", linewidth=0.8, linestyle="--")
+    bars = ax.bar(labels, values, color=["#4c78a8", "#7b8f63"], width=0.58)
     ax.set_ylim(0, 100)
-    ax.set_ylabel("reference action rank (%)")
-    ax.set_title("Potential ranking")
-    ax.text(0.5, 8, "mean rank = 2.00", ha="center", fontsize=8.5, color="#44546a")
-    ax.grid(True, axis="y", alpha=0.22)
+    ax.set_ylabel("validated states (%)")
+    ax.set_title("(a) Potential ranking")
+    ax.text(
+        0.5,
+        12,
+        "mean rank = 2.00",
+        ha="center",
+        fontsize=8.5,
+        color="#3f4a5a",
+        bbox=dict(boxstyle="round,pad=0.22", facecolor="#f4f6f8", edgecolor="none"),
+    )
+    for bar, value in zip(bars, values):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            value + 3.0,
+            f"{value:.1f}%",
+            ha="center",
+            va="bottom",
+            fontsize=8.5,
+            color="#2f3542",
+        )
+    ax.grid(True, axis="y", alpha=0.18)
 
     # Panel B: policy/value training curve.
     ax = axes[1]
@@ -581,24 +613,44 @@ def plot_experiment_summary() -> None:
     policy_loss = np.array([1.7195, 0.1043, 0.0124, 0.0063, 0.0138])
     ax.plot(steps, total_loss, marker="o", linewidth=1.8, color="#4c78a8", label="total")
     ax.plot(steps, policy_loss, marker="s", linewidth=1.5, color="#f58518", label="policy")
+    ax.axvline(9100, color="#6b7280", linestyle="--", linewidth=1.0)
+    ax.text(
+        9100,
+        0.018,
+        "selected\ncheckpoint",
+        ha="center",
+        va="bottom",
+        fontsize=7.8,
+        color="#3f4a5a",
+    )
     ax.set_yscale("log")
     ax.set_xlabel("optimization step")
-    ax.set_ylabel("loss (log scale)")
-    ax.set_title("Graph policy/value fit")
+    ax.set_ylabel("loss")
+    ax.set_title("(b) Graph policy/value prior")
     ax.legend(frameon=False, fontsize=8)
     ax.grid(True, which="both", axis="y", alpha=0.22)
 
     # Panel C: deterministic validation outcomes.
     ax = axes[2]
-    labels = ["Reference", "Ref.-aided", "No-demo"]
-    hp = [403, 315, 0]
-    colors = ["#7b8f63", "#4c78a8", "#c7cdd6"]
-    ax.bar(labels, hp, color=colors, width=0.58)
-    ax.set_ylim(0, 450)
-    ax.set_ylabel("hit points at validation end")
-    ax.set_title("Strict validation")
-    ax.text(2, 28, "unreached", ha="center", fontsize=8.5, color="#44546a")
-    ax.grid(True, axis="y", alpha=0.22)
+    methods = ["agentic ref.", "reference", "PUCT prior", "no-demo archive"]
+    hp = np.array([436, 403, 315, 0])
+    colors = ["#9467bd", "#7b8f63", "#4c78a8", "#c7cdd6"]
+    y = np.arange(len(methods))
+    bars = ax.barh(y, hp, color=colors, height=0.58)
+    bars[-1].set_hatch("//")
+    bars[-1].set_edgecolor("#7b8794")
+    bars[-1].set_linewidth(0.7)
+    ax.set_yticks(y, methods)
+    ax.invert_yaxis()
+    ax.set_xlim(0, 475)
+    ax.set_xlabel("terminal HP under strict replay")
+    ax.set_title("(c) Task-level validation")
+    for idx, value in enumerate(hp):
+        if value > 0:
+            ax.text(value + 8, idx, f"{value}", va="center", fontsize=8.5, color="#2f3542")
+        else:
+            ax.text(18, idx, "not solved", va="center", fontsize=8.5, color="#3f4a5a")
+    ax.grid(True, axis="x", alpha=0.18)
 
     for ax in axes:
         ax.spines["top"].set_visible(False)

@@ -24,6 +24,7 @@ Deep Reinforcement Learning Course Project 2026
 \iclrfinalcopy
 
 \begin{document}
+\raggedbottom
 \maketitle
 \lhead{Deep Reinforcement Learning Course Project 2026}
 
@@ -35,20 +36,18 @@ is fully observable and rule-defined, yet naive reinforcement learning rarely
 receives a useful terminal signal.  The deterministic combat formula creates
 sharp resource thresholds: a locally legal interaction may preserve immediate
 feasibility while eliminating a much later solution path.  We organize the study
-around two complementary approaches.  First, agent-assisted reference-route
+around three complementary approaches.  First, agent-assisted reference-route
 construction produces high-quality trajectories for auditing simulator semantics
 and revealing feasible resource schedules.  Second, an AlphaGo Zero-style
 learning-and-planning pipeline combines a graph policy/value model,
 single-agent PUCT-MCTS, and potential-based reward shaping learned from
 reference trajectories.  The reference-aided policy/value variant reaches the
 terminal condition from the fixed initial state with final HP \(315\), while the
-no-demonstration variant remains incomplete, suggesting that local search priors
-must be combined with archive-based exploration and continuation-aware stage
-values.  A separate multi-agent reference planner, based on specialized
-candidate scorers and beam search over legal simulator transitions, obtains a
-validated trajectory with final HP \(436\).  This result is reported as a
-reference-construction baseline rather than as evidence for no-demonstration
-exploration.
+no-demonstration variant remains incomplete.  Third, a multi-agent reference
+planner decomposes legal candidate evaluation into stage, resource, combat, and
+terminal-objective modules, obtains a validated trajectory with final HP
+\(436\), and provides a prototype for future Magic Tower agent benchmarks with
+symbolic, textual, and video observations.
 \end{abstract}
 
 \section{Introduction}
@@ -89,18 +88,21 @@ We study a first-ten-floor instance in which success requires reaching the
 terminal encounter with positive HP under deterministic validation.  The task
 contains the core dependencies of the full game: early equipment acquisition,
 key circulation, threshold-sensitive stat growth, and a terminal combat check.
-This paper develops two complementary solution paths.  First, agent-assisted
+This paper develops three complementary solution paths.  First, agent-assisted
 reference-route construction is used to obtain high-quality trajectories and to
-validate simulator semantics.  A multi-agent beam-search planner constructs a
-strong reference trajectory with final HP \(436\), while an earlier
-human-audited reference route with final HP \(403\) is retained for potential
-learning and simulator audits.  Second, we build an AlphaGo Zero-style
-learning-and-planning system that combines graph policy/value learning,
-single-agent PUCT-MCTS, and potential-based reward shaping.  The reference-aided
-policy/value variant also solves the first-ten-floor instance from the fixed
-initial state, reaching final HP \(315\), whereas the no-demonstration variant
-still reaches only intermediate milestones.  This gap motivates archive-based
-exploration and continuation-aware stage values.
+validate simulator semantics; an earlier human-audited reference route with
+final HP \(403\) is retained for potential learning and simulator audits.
+Second, we build an AlphaGo Zero-style learning-and-planning system that
+combines graph policy/value learning, single-agent PUCT-MCTS, and
+potential-based reward shaping.  The reference-aided policy/value variant solves
+the first-ten-floor instance from the fixed initial state, reaching final HP
+\(315\), whereas the no-demonstration variant still reaches only intermediate
+milestones.  Third, a multi-agent beam-search planner constructs a strong
+reference trajectory with final HP \(436\) by decomposing candidate evaluation
+into stage, resource, combat, and terminal-objective modules.  Beyond improving
+reference-route construction, this third line anticipates a benchmark setting in
+which language or multimodal agents must coordinate specialized reasoning roles
+over the same simulator-verified action interface.
 
 \section{Related Work}
 \paragraph{Search-guided reinforcement learning.}
@@ -312,7 +314,7 @@ trajectories with external planning assistance and strict simulator replay.  The
 purpose is to expose feasible resource schedules, validate the simulator, and
 establish reference behavior for subsequent reward and planning experiments.
 These trajectories verify deterministic transition semantics, event logic,
-no-shop/no-fly constraints, and visualization consistency.  The fixed start
+and visualization consistency.  The fixed start
 state is Floor 2 at coordinate \((3,7)\), with
 \(\mathrm{HP}=400\), \(\mathrm{ATK}=10\), \(\mathrm{DEF}=10\),
 \(\mathrm{Money}=4\), and zero colored keys.  The reference trajectory reaches the
@@ -323,9 +325,8 @@ Floor-10 terminal condition with
   \mathrm{DEF}_T=27,\quad
   \mathrm{Money}_T=262.
 \]
-It uses no Floor-4 shop and no flying item.  The trajectory is retained as a
-validation artifact, not as evidence that the pure RL system has solved the
-task.
+The trajectory is retained as a validation artifact, not as evidence that the
+pure RL system has solved the task.
 
 \section{Methodology}
 \subsection{Reference-Derived Potential Learning}
@@ -601,12 +602,14 @@ no-demonstration archive search.
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.98\linewidth]{figures/experiment_summary.png}
-  \caption{Summary of the main empirical signals.  Left: the learned potential
-  ranks the reference transition within the top three legal alternatives in
-  most validated states.  Middle: graph policy/value training reaches its best
-  checkpoint before overfitting becomes visible.  Right: deterministic replay
-  separates reference validation, reference-aided closed-loop search, and
-  the current no-demonstration archive search.}
+  \caption{Diagnostic summary of the three empirical signals used in this
+  study.  The left panel evaluates whether the learned potential assigns higher
+  progress to validated successors than to alternative legal successors.  The
+  middle panel reports the supervised fit of the graph policy/value model used
+  as a PUCT prior.  The right panel reports strict replay outcomes, which remain
+  the only success criterion.  Thus, the figure separates shaping quality,
+  model fitting, and task-level validation rather than treating shaped reward as
+  a proxy for success.}
   \label{fig:experiment-summary}
 \end{figure}
 
@@ -661,8 +664,8 @@ Floor-10 encounter with
   \mathrm{ATK}_T=27,\qquad
   \mathrm{DEF}_T=27.
 \]
-The route passes the same deterministic replay and constraint checks as the
-other reported routes.  Its milestone sequence is useful because it exposes the
+The route passes the same deterministic replay validation as the other reported
+routes.  Its milestone sequence is useful because it exposes the
 long-horizon structure that local greedy search repeatedly misses: the route
 obtains the sword at step \(19\), obtains the shield at step \(75\), collects
 late Floor-10 stat resources before the terminal stage, obtains the red key at
@@ -762,6 +765,16 @@ visualizer.  An LLM agent can then be evaluated on action selection,
 trajectory-level planning, rule discovery, and post-hoc explanation.  This is
 analogous to ARC-AGI's emphasis on test-time reasoning, but Magic Tower adds an
 explicit transition function and long interactive trajectories.
+
+The multi-agent reference planner provides a concrete bridge to this benchmark
+formulation.  Its modules already operate over a shared candidate-action table,
+simulator-derived after-states, and explicit trace memory.  In a future
+benchmark, these modules can be replaced by language or multimodal agents that
+receive symbolic states, textual summaries, or video observations, while the
+arbiter and strict simulator replay keep evaluation grounded in valid actions.
+Thus the third approach studied here is not only a route-construction baseline;
+it is also a minimal protocol for evaluating coordinated agent reasoning in
+Magic Tower.
 
 A major advantage of this domain is data scale.  The Magic Tower community has
 produced thousands of user-created tower instances and a large number of
