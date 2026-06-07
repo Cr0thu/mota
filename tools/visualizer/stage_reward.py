@@ -211,7 +211,7 @@ def transition_reward(
 
 
 def stage_action_priors(env, actions: list) -> list[float]:
-    """Return stage-aware action priors on the same rough scale as PPO logits."""
+    """Return stage-aware action priors for the visualizer action table."""
 
     if not actions:
         return []

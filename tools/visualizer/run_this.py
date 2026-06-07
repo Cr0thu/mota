@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 10层魔塔可视化界面 V2
-支持 PPO 训练动态演示 + 手动节点选择
+支持手动游玩、路线回放和实时 reward 显示
 """
 import os
 import sys
@@ -25,12 +25,6 @@ from environment import Terrain
 from route_player import load_route, visualizer_pos_text
 from stage_reward import stage_action_priors, stage_potential, transition_reward
 
-PPO = None
-compute_sword_reward = None
-PPO_REWARD_RATE = None
-action_prior_logits = None
-MapGNNEncoder = None
-TabularQLearningAgent = None
 PROJECT_ROOT = BASE_DIR.parent.parent
 ROUTE_SEARCH_DIRS = (
     PROJECT_ROOT / 'artifacts' / 'manual_exploration_20260524',
@@ -85,7 +79,7 @@ METRIC_TINTS = {
     '楼层': '#f8fafc',
     '阶段': '#faf5ff',
     'Phi': '#f0fdfa',
-    'Q状态': '#fff7ed',
+    '评分': '#fff7ed',
     '最近': '#fef2f2',
     '累计': '#eff6ff',
     'Base': '#f8fafc',
@@ -412,16 +406,13 @@ class ScrollableFrame(tk.Frame):
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title('50层魔塔 - 前十层RL可视化')
+        self.title('50层魔塔 - 前十层可视化')
         self.geometry('1500x920')
         self.minsize(1200, 780)
 
         # 环境
         self.env = None
-        # PPO agent
-        self.agent = None
-        self.q_agent = None
-        # 训练控制
+        # 旧自动策略代码已移除；保留这些状态位只是为了路线播放守卫逻辑。
         self.training = False
         self.q_training = False
         self.stop_training = False
@@ -433,8 +424,6 @@ class App(tk.Tk):
         self.route_playing = False
         self.route_playback = None
         self.route_choices = {}
-        self._demo_recent_positions = []
-        self._demo_last_action_was_stair = False
         # 手动模式
         self.action_list = []
         self.action_iids = []
@@ -563,7 +552,7 @@ class App(tk.Tk):
         title_box.pack(side=tk.LEFT)
         tk.Label(title_box, text='50层魔塔 · 前十层实验台', bg=COLORS['toolbar'], fg=COLORS['toolbar_text'],
                  font=('Arial', 18, 'bold')).pack(anchor='w')
-        tk.Label(title_box, text='宏动作交互 / 路线回放 / Q-learning 检查 / Reward 监视',
+        tk.Label(title_box, text='宏动作交互 / 路线回放 / Reward 监视',
                  bg=COLORS['toolbar'], fg='#475569', font=('Arial', 10)).pack(anchor='w', pady=(1, 0))
         title_actions = tk.Frame(title_row, bg=COLORS['toolbar'])
         title_actions.pack(side=tk.RIGHT, pady=2)
@@ -588,7 +577,7 @@ class App(tk.Tk):
         self.mode_buttons = {}
         mode_row = tk.Frame(mode_box, bg='#eef2ff')
         mode_row.pack(anchor='w', padx=8, pady=(0, 8))
-        for text, value, width in [('手动', 'manual', 5), ('PPO', 'train', 5), ('Q学习', 'q', 6), ('贪婪', 'demo', 5)]:
+        for text, value, width in [('手动', 'manual', 5)]:
             btn = self._make_button(mode_row, text, lambda v=value: self._set_mode(v), variant='ghost', width=width)
             btn.pack(side=tk.LEFT, padx=2)
             self.mode_buttons[value] = btn
@@ -700,7 +689,7 @@ class App(tk.Tk):
             ('HP', '#ef4444'), ('ATK', '#f59e0b'), ('DEF', '#0ea5e9'), ('MDEF', '#8b5cf6'),
             ('Money', '#10b981'), ('Exp', '#6366f1'), ('黄钥匙', '#ca8a04'), ('蓝钥匙', '#2563eb'),
             ('红钥匙', '#dc2626'), ('楼层', '#475569'), ('阶段', '#7c3aed'), ('Phi', '#14b8a6'),
-            ('Q状态', '#f97316'),
+            ('评分', '#f97316'),
         ]
         state_columns = 5
         for i, (name, accent) in enumerate(state_items):
@@ -836,7 +825,7 @@ class App(tk.Tk):
             highlightthickness=1,
         )
         action_summary.pack(fill=tk.X, pady=(0, 7))
-        cols = ('序号', '坐标', '类别', 'ID', 'Q', 'R', 'Path', 'Δ伤', '说明')
+        cols = ('序号', '坐标', '类别', 'ID', 'Score', 'R', 'Path', 'Δ伤', '说明')
         self.action_tree = ttk.Treeview(manual_body, columns=cols, show='headings',
                                         height=13, style='Mota.Treeview')
         for c in cols:
@@ -845,7 +834,7 @@ class App(tk.Tk):
                 self.action_tree.column(c, width=38, anchor='center')
             elif c == '说明':
                 self.action_tree.column(c, width=116, anchor='w')
-            elif c in {'Q', 'R'}:
+            elif c in {'Score', 'R'}:
                 self.action_tree.column(c, width=52, anchor='e')
             elif c in {'Path', 'Δ伤'}:
                 self.action_tree.column(c, width=46, anchor='e')
@@ -855,7 +844,7 @@ class App(tk.Tk):
         self.action_tree.tag_configure('item', background='#ecfdf5', foreground='#064e3b')
         self.action_tree.tag_configure('terrain', background='#eff6ff', foreground='#1e3a8a')
         self.action_tree.tag_configure('story', background='#faf5ff', foreground='#581c87')
-        self.action_tree.tag_configure('q_best', background='#dcfce7', foreground='#064e3b')
+        self.action_tree.tag_configure('best', background='#dcfce7', foreground='#064e3b')
         self.action_tree.tag_configure('r_bad', background='#fff7ed', foreground='#9a3412')
         self.action_tree.tag_configure('other', background=COLORS['surface'], foreground=COLORS['text'])
         self.action_tree.pack(fill=tk.BOTH, expand=True, pady=(0, 8))
@@ -882,82 +871,26 @@ class App(tk.Tk):
         self.action_detail.pack(fill=tk.X, padx=1, pady=(2, 8))
         self.action_detail.config(state=tk.DISABLED)
 
-        # --- 训练/演示面板 ---
-        self.train_panel, train_body = self._make_section(
+        # --- 运行日志面板 ---
+        self.log_panel, log_body = self._make_section(
             right_frame,
-            'PPO 训练',
-            '队友版本目前主要用于拿 5F 剑的演示，不代表完整前十层策略。',
-            fill=tk.BOTH,
-            expand=True,
-            accent='#059669',
-            tint='#ecfdf5',
+            '运行日志',
+            '记录手动操作、路线回放和实时 reward 计算。',
+            fill=tk.X,
+            expand=False,
+            accent='#64748b',
+            tint='#f8fafc',
         )
-        # 默认隐藏，切换模式时显示
-
-        train_hint = tk.Label(
-            train_body,
-            text='当前队友版本的 PPO 目标主要是“拿 5F 剑”，不是完整击败 10F 骷髅队长。'
-                 '训练/演示会加载 torch，可能需要等待。',
-            justify=tk.LEFT,
-            anchor='w',
-            fg=COLORS['muted'],
-            bg=COLORS['surface'],
-            wraplength=400,
-        )
-        train_hint.grid(row=0, column=0, columnspan=2, sticky='we', pady=(0, 8))
-
-        tk.Label(train_body, text='训练回合数', bg=COLORS['surface'], fg=COLORS['text'],
-                 font=('Arial', 10, 'bold')).grid(row=1, column=0, sticky='w', pady=4)
-        self.rounds_var = tk.StringVar(value='500')
-        tk.Entry(train_body, textvariable=self.rounds_var, width=12, relief=tk.FLAT,
-                 bg=COLORS['muted_bg']).grid(row=1, column=1, sticky='we', padx=(8, 0), ipady=5)
-
-        tk.Label(train_body, text='模型路径', bg=COLORS['surface'], fg=COLORS['text'],
-                 font=('Arial', 10, 'bold')).grid(row=2, column=0, sticky='w', pady=4)
-        self.model_path_var = tk.StringVar(value='model/ppo_10floor.pth')
-        tk.Entry(train_body, textvariable=self.model_path_var, width=28, relief=tk.FLAT,
-                 bg=COLORS['muted_bg']).grid(row=2, column=1, sticky='we', padx=(8, 0), ipady=5)
-        train_body.columnconfigure(1, weight=1)
-
-        tk.Label(train_body, text='Q表路径', bg=COLORS['surface'], fg=COLORS['text'],
-                 font=('Arial', 10, 'bold')).grid(row=3, column=0, sticky='w', pady=4)
-        self.q_model_path_var = tk.StringVar(value=str(PROJECT_ROOT / 'artifacts/runs/visualizer_qlearning/q_table_quality_shield_v4.json'))
-        tk.Entry(train_body, textvariable=self.q_model_path_var, width=28, relief=tk.FLAT,
-                 bg=COLORS['muted_bg']).grid(row=3, column=1, sticky='we', padx=(8, 0), ipady=5)
-
-        btn_frm2 = tk.Frame(train_body, bg=COLORS['surface'])
-        btn_frm2.grid(row=4, column=0, columnspan=2, pady=(10, 4), sticky='we')
-        self.train_btn = self._make_button(btn_frm2, '开始训练', self._start_train_generator,
-                                           variant='success', width=10)
-        self.train_btn.pack(side=tk.LEFT, padx=3)
-        self._make_button(btn_frm2, '停止训练', self._stop_training, variant='danger',
-                          width=10).pack(side=tk.LEFT, padx=3)
-        self._make_button(btn_frm2, '贪婪演示', self._start_demo, variant='primary',
-                          width=10).pack(side=tk.LEFT, padx=3)
-
-        q_btn_frm = tk.Frame(train_body, bg=COLORS['surface'])
-        q_btn_frm.grid(row=5, column=0, columnspan=2, pady=(2, 8), sticky='we')
-        self.q_train_btn = self._make_button(q_btn_frm, 'Q训练', self._start_q_train_generator,
-                                             variant='success', width=8)
-        self.q_train_btn.pack(side=tk.LEFT, padx=3)
-        self._make_button(q_btn_frm, 'Q停止', self._stop_q_training, variant='danger',
-                          width=8).pack(side=tk.LEFT, padx=3)
-        self._make_button(q_btn_frm, 'Q贪婪演示', self._start_q_demo, variant='primary',
-                          width=10).pack(side=tk.LEFT, padx=3)
-        self._make_button(q_btn_frm, '刷新Q值', self._refresh_action_list, variant='ghost',
-                          width=8).pack(side=tk.LEFT, padx=3)
-        ToolTip(self.q_train_btn, '使用 tabular Q-learning 训练当前宏动作环境，并把 Q(s,a) 显示在手动动作表里。')
-
-        self.train_log = scrolledtext.ScrolledText(train_body, height=10, width=40, font=('Consolas', 9),
+        self.train_panel = None
+        self.train_log = scrolledtext.ScrolledText(log_body, height=8, width=40, font=('Consolas', 9),
                                                    bg='#0f172a', fg='#e2e8f0',
                                                    insertbackground='#e2e8f0', relief=tk.FLAT)
-        self.train_log.grid(row=6, column=0, columnspan=2, pady=5, sticky='nsew')
-        train_body.rowconfigure(6, weight=1)
+        self.train_log.grid(row=0, column=0, pady=5, sticky='nsew')
+        log_body.columnconfigure(0, weight=1)
 
-        # 训练进度标签
-        self.train_status = tk.Label(train_body, text='就绪', fg=COLORS['muted'],
+        self.train_status = tk.Label(log_body, text='就绪', fg=COLORS['muted'],
                                      bg=COLORS['surface'], font=('Arial', 10, 'bold'))
-        self.train_status.grid(row=7, column=0, columnspan=2, sticky='w', pady=(4, 0))
+        self.train_status.grid(row=1, column=0, sticky='w', pady=(4, 0))
 
         status = tk.Label(self, textvariable=self.status_var, anchor='w',
                           bg=COLORS['status'], fg='#ffffff', padx=14, pady=7,
@@ -994,9 +927,7 @@ class App(tk.Tk):
         except Exception:
             stage_text = '--'
             phi_text = '--'
-        q_text = '--'
-        if self.q_agent is not None:
-            q_text = self._compact_count(len(getattr(self.q_agent, 'q', {})))
+        score_text = '阶段先验'
         values = {
             'HP': f'{p.hp}', 'ATK': f'{p.atk}', 'DEF': f'{p.def_}',
             'MDEF': f'{p.mdef}', 'Money': f'{p.money}', 'Exp': f'{p.exp}',
@@ -1006,7 +937,7 @@ class App(tk.Tk):
             '楼层': f'{z + 1}F',
             '阶段': stage_text,
             'Phi': phi_text,
-            'Q状态': q_text,
+            '评分': score_text,
         }
         for name, val in values.items():
             self.state_labels[name].config(text=val)
@@ -1097,40 +1028,13 @@ class App(tk.Tk):
     def _base_reward(self, before_state, after_state, ending):
         if ending == 'stop':
             return -9999.0
-        before = np.asarray(before_state, dtype=np.float32)
-        after = np.asarray(after_state, dtype=np.float32)
-        if PPO_REWARD_RATE is None:
-            rate = np.zeros_like(after, dtype=np.float32)
-        else:
-            rate = np.asarray(PPO_REWARD_RATE, dtype=np.float32)
-            if rate.shape[0] != after.shape[0]:
-                padded = np.zeros_like(after, dtype=np.float32)
-                n = min(rate.shape[0], after.shape[0])
-                padded[:n] = rate[:n]
-                rate = padded
-        return float(np.sum((after - before) * rate))
+        return 0.0
 
     def _is_stair_action(self, action):
         return getattr(action, 'id', '') in {'upFloor', 'downFloor'}
 
     def _local_sword_reward_before_penalty(self, action, base_reward, ending, before_pos, after_pos):
-        # Mirrors tools/visualizer/PPO.py::compute_sword_reward without importing torch.
-        sword_pos = (4, 11, 11)
-        reward = float(base_reward)
-        action_pos = self.env.n2p.get(action, before_pos)
-        action_pos = action_pos[:3]
-        before_pos = before_pos[:3]
-        after_pos = after_pos[:3]
-
-        if self._is_stair_action(action):
-            return reward
-        if action_pos == sword_pos:
-            reward += 10000.0
-        if after_pos[0] == sword_pos[0]:
-            dist = abs(after_pos[1] - sword_pos[1]) + abs(after_pos[2] - sword_pos[2])
-            reward += max(0.0, 30.0 - dist * 2.0)
-        reward -= 10.0
-        return reward
+        return float(base_reward)
 
     def _make_reward_row(
         self,
@@ -1299,102 +1203,22 @@ class App(tk.Tk):
             '快捷键：Enter 执行选中动作，Backspace/Cmd+Z 回退，R 重置，L 切换连线，+/- 查看楼层。',
         )
 
-    def _ensure_rl_components(self):
-        """Load torch-based PPO code only when the user starts training/demo."""
-        global PPO, compute_sword_reward, PPO_REWARD_RATE, action_prior_logits, MapGNNEncoder
-        if PPO is not None:
-            return True
-        try:
-            from PPO import PPO as _PPO
-            from PPO import PPO_REWARD_RATE as _PPO_REWARD_RATE
-            from PPO import compute_sword_reward as _compute_sword_reward
-            from PPO import action_prior_logits as _action_prior_logits
-            from GNN import MapGNNEncoder as _MapGNNEncoder
-        except Exception as exc:
-            self._log(f'[系统] RL 依赖不可用: {exc}')
-            messagebox.showerror(
-                '缺少 RL 依赖',
-                '手动可视化可以继续使用，但 PPO 训练/演示需要安装 torch。\n\n'
-                f'当前错误: {exc}',
-            )
-            return False
-        PPO = _PPO
-        PPO_REWARD_RATE = _PPO_REWARD_RATE
-        compute_sword_reward = _compute_sword_reward
-        action_prior_logits = _action_prior_logits
-        MapGNNEncoder = _MapGNNEncoder
-        return True
-
-    def _ensure_q_components(self):
-        """Load the lightweight tabular Q-learning baseline."""
-        global TabularQLearningAgent, action_prior_logits
-        if TabularQLearningAgent is None:
-            try:
-                from q_learning import TabularQLearningAgent as _TabularQLearningAgent
-            except Exception as exc:
-                self._log(f'[系统] Q-learning 组件不可用: {exc}')
-                messagebox.showerror('Q-learning 加载失败', str(exc))
-                return False
-            TabularQLearningAgent = _TabularQLearningAgent
-        if action_prior_logits is None:
-            try:
-                from PPO import action_prior_logits as _action_prior_logits
-                action_prior_logits = _action_prior_logits
-            except Exception as exc:
-                self._log(f'[系统] 资源先验不可用，Q-learning 将只显示 Q 值: {exc}')
-        return True
-
-    def _get_q_agent(self, silent=False):
-        if self.q_agent is not None:
-            return self.q_agent
-        if not self._ensure_q_components():
-            return None
-        path = Path(self.q_model_path_var.get()) if hasattr(self, 'q_model_path_var') else None
-        if path and path.exists():
-            try:
-                self.q_agent = TabularQLearningAgent.load(path)
-                if not silent:
-                    self._log(f'[Q] 已加载 Q 表: {path}')
-                return self.q_agent
-            except Exception as exc:
-                if not silent:
-                    self._log(f'[Q] 加载 Q 表失败，将新建: {exc}')
-        self.q_agent = TabularQLearningAgent(alpha=0.25, gamma=0.97, epsilon=0.25, prior_weight=1.0)
-        return self.q_agent
-
     def _action_prior_values(self, actions):
-        if not actions:
-            return []
-        stage_priors = stage_action_priors(self.env, actions)
-        if action_prior_logits is None and not self._ensure_q_components():
-            return stage_priors
-        if action_prior_logits is None:
-            return stage_priors
-        try:
-            ppo_priors = list(action_prior_logits(self.env, actions))
-        except Exception as exc:
-            self._log(f'[Q] 资源先验计算失败: {exc}')
-            return stage_priors
-        return [stage + 0.25 * ppo for stage, ppo in zip(stage_priors, ppo_priors)]
+        return stage_action_priors(self.env, actions) if actions else []
 
     def _compute_action_metrics(self, actions):
-        agent = self._get_q_agent(silent=True)
         priors = self._action_prior_values(actions)
-        if agent is None:
-            q_rows = [{'q': 0.0, 'prior': priors[i] if i < len(priors) else 0.0, 'score': 0.0}
-                      for i in range(len(actions))]
-        else:
-            q_rows = agent.action_values(self.env, actions, priors)
         metrics = []
         for index, action in enumerate(actions):
             estimate = self._estimate_action_reward(action)
             reward = None if estimate is None else float(estimate.get('total_reward', 0.0))
-            row = q_rows[index] if index < len(q_rows) else {'q': 0.0, 'prior': 0.0, 'score': 0.0}
+            prior = priors[index] if index < len(priors) else 0.0
+            score = float(prior) + (0.02 * reward if reward is not None else 0.0)
             metrics.append({
-                'q': float(row.get('q', 0.0)),
-                'prior': float(row.get('prior', 0.0)),
-                'bonus': float(row.get('bonus', 0.0)),
-                'score': float(row.get('score', 0.0)),
+                'q': 0.0,
+                'prior': float(prior),
+                'bonus': 0.0,
+                'score': score,
                 'reward': reward,
                 'path_len': self._reachable_hop_distance(action),
                 'damage_drop': self._action_damage_drop(action),
@@ -1422,21 +1246,12 @@ class App(tk.Tk):
                 btn.config(bg='#eef2ff', activebackground='#dbeafe', fg='#1e3a8a')
 
     def _switch_mode(self):
-        mode = self.mode_var.get()
+        self.mode_var.set('manual')
         self._update_mode_buttons()
-        if mode == 'manual':
-            self.manual_panel.pack(fill=tk.BOTH, expand=True, padx=10, pady=7)
-            self.train_panel.pack_forget()
-            if self.env:
-                self._refresh_action_list()
-            self._set_status('手动模式：单击地图目标执行；右侧列表用于查看动作说明。')
-        else:
-            self.manual_panel.pack_forget()
-            self.train_panel.pack(fill=tk.BOTH, expand=True, padx=10, pady=7)
-            if mode == 'q':
-                self._set_status('Q-learning 模式：训练后可在手动动作表查看每个候选动作的 Q(s,a)。')
-            else:
-                self._set_status('训练/演示模式：当前 PPO 目标主要是拿 5F 剑。')
+        self.manual_panel.pack(fill=tk.BOTH, expand=True, padx=10, pady=7)
+        if self.env:
+            self._refresh_action_list()
+        self._set_status('手动/回放模式：单击地图目标执行；右侧列表用于查看动作说明和实时 reward。')
 
     def _on_speed_change(self, _event=None):
         try:
@@ -1488,7 +1303,7 @@ class App(tk.Tk):
 
     def _sync_algorithm_start(self, silent=False, stop_route=True):
         if self.training or self.q_training:
-            messagebox.showwarning('提示', '请先停止训练')
+            messagebox.showwarning('提示', '请先停止当前自动流程')
             return False
         if stop_route:
             self._stop_route_playback()
@@ -1924,7 +1739,7 @@ class App(tk.Tk):
             self._set_status('[路线] 已暂停播放。')
             return
         if self.training or self.q_training:
-            messagebox.showwarning('提示', '请先停止训练')
+            messagebox.showwarning('提示', '请先停止当前自动流程')
             return
         if self.route_playback is None:
             if not self._load_selected_route():
@@ -1975,7 +1790,7 @@ class App(tk.Tk):
                     self._format_pos(pos),
                     action.class_,
                     action.id,
-                    self._format_metric(metric.get('q')),
+                    self._format_metric(metric.get('score')),
                     self._format_metric(metric.get('reward')),
                     self._format_metric(metric.get('path_len')),
                     self._format_metric(metric.get('damage_drop')),
@@ -1988,8 +1803,6 @@ class App(tk.Tk):
         self._update_action_summary()
         self._update_action_detail(None)
         self._update_view_controls()
-        if self.q_agent is not None and 'Q状态' in self.state_labels:
-            self.state_labels['Q状态'].config(text=self._compact_count(len(getattr(self.q_agent, 'q', {}))))
         self._set_status(f'[动作] 当前有 {len(self.action_list)} 个可行动作。')
 
     def _best_metric_index(self, metrics):
@@ -2024,7 +1837,7 @@ class App(tk.Tk):
             value = self._format_metric(metric.get(key))
             return f'{prefix} #{idx + 1} {self._format_pos(pos)} {action.class_}:{action.id} ({key}={value})'
 
-        lines = [action_line('Q推荐', best_idx, 'score')]
+        lines = [action_line('综合建议', best_idx, 'score')]
         if best_reward_idx != best_idx:
             lines.append(action_line('即时R最高', best_reward_idx, 'reward'))
         if self.action_metrics[worst_reward_idx].get('reward') is not None:
@@ -2231,7 +2044,7 @@ class App(tk.Tk):
     def _action_tag(self, action, metric=None, is_best=False):
         metric = metric or {}
         if is_best and metric.get('score', 0.0) > 0:
-            return 'q_best'
+            return 'best'
         reward = metric.get('reward')
         if reward is not None and reward < -250:
             return 'r_bad'
@@ -2323,12 +2136,11 @@ class App(tk.Tk):
             text += '\n' + self._format_reward_estimate(estimate)
             metric = self._metric_for_action(action, estimate)
             text += (
-                '\nQ-learning 反馈：'
-                f'Q(s,a) {self._format_metric(metric.get("q"))} | '
+                '\n动作评分：'
+                f'综合分 {self._format_metric(metric.get("score"))} | '
                 f'即时R {self._format_metric(metric.get("reward"))} | '
-                f'资源先验 {self._format_metric(metric.get("prior"))} | '
-                f'探索 {self._format_metric(metric.get("bonus"))} | '
-                f'选择分 {self._format_metric(metric.get("score"))}'
+                f'阶段先验 {self._format_metric(metric.get("prior"))} | '
+                f'临界收益 {self._format_metric(metric.get("damage_drop"))}'
             )
             text += (
                 '\n图节点信息：'
@@ -2346,30 +2158,16 @@ class App(tk.Tk):
             if known_action is action:
                 return metric
         priors = self._action_prior_values([action])
-        agent = self._get_q_agent(silent=True)
         prior = priors[0] if priors else 0.0
         if estimate is None:
             estimate = self._estimate_action_reward(action)
         reward = None if estimate is None else float(estimate.get('total_reward', 0.0))
-        if agent is not None:
-            row = agent.action_values(self.env, [action], priors)[0]
-            return {
-                'q': float(row.get('q', 0.0)),
-                'prior': float(row.get('prior', prior)),
-                'bonus': float(row.get('bonus', 0.0)),
-                'score': float(row.get('score', 0.0)),
-                'reward': reward,
-                'path_len': self._reachable_hop_distance(action),
-                'damage_drop': self._action_damage_drop(action),
-                'unlock_value': self._estimated_unlock_value(action),
-                'reachable': True,
-                'masked': False,
-            }
+        score = float(prior) + (0.02 * reward if reward is not None else 0.0)
         return {
             'q': 0.0,
             'prior': float(prior),
             'bonus': 0.0,
-            'score': float(prior),
+            'score': score,
             'reward': reward,
             'path_len': self._reachable_hop_distance(action),
             'damage_drop': self._action_damage_drop(action),
@@ -2377,563 +2175,6 @@ class App(tk.Tk):
             'reachable': True,
             'masked': False,
         }
-
-    # ------------------------------------------------------------------------
-    #  Tabular Q-learning
-    # ------------------------------------------------------------------------
-    def _start_q_train_generator(self):
-        if self.training or self.q_training:
-            messagebox.showwarning('提示', '已有训练正在进行中')
-            return
-        agent = self._get_q_agent()
-        if agent is None:
-            return
-        try:
-            rounds = int(self.rounds_var.get())
-        except ValueError:
-            messagebox.showerror('错误', '回合数必须是整数')
-            return
-        if rounds <= 0:
-            return
-        agent.epsilon = 0.25
-        save_path = Path(self.q_model_path_var.get())
-        self.q_training = True
-        self.stop_training = False
-        self.q_train_btn.config(state='disabled')
-        self.train_status.config(text='Q-learning 训练中...', fg='green')
-        self._q_train_state = {
-            'rounds': rounds,
-            'episode': 0,
-            'step_count': 0,
-            'max_steps': 180,
-            'save_path': save_path,
-            'sword_collected': False,
-            'best_hp': 0,
-            'last_td': 0.0,
-        }
-        self._log(
-            f'[Q] 开始 {rounds} 回合训练；alpha={agent.alpha:.2f}, '
-            f'gamma={agent.gamma:.2f}, epsilon={agent.epsilon:.2f}, prior_weight={agent.prior_weight:.2f}'
-        )
-        self._q_episode_start()
-
-    def _q_episode_start(self):
-        if not self.q_training or self.stop_training or self._q_train_state['episode'] >= self._q_train_state['rounds']:
-            self._q_train_finish()
-            return
-        self.env.reset(refresh_frame=True)
-        self._reset_reward_monitor(note=f'Q Episode {self._q_train_state["episode"] + 1} 开始。')
-        self._refresh_state()
-        self._refresh_action_list()
-        self._q_train_state['step_count'] = 0
-        self._q_step_loop()
-
-    def _q_step_loop(self):
-        if not self.q_training or self.stop_training:
-            self._q_train_finish()
-            return
-        agent = self._get_q_agent(silent=True)
-        actions = self.env.get_feasible_actions()
-        if not actions:
-            self._q_episode_end('stop')
-            return
-        priors = self._action_prior_values(actions)
-        state_key = agent.state_key(self.env)
-        action, index, mode = agent.choose_action(self.env, actions, priors)
-        action_key = agent.action_key(self.env, action)
-
-        before_phi = stage_potential(self.env)
-        before = self.env.get_player_state().copy()
-        before_pos = self.env.n2p[self.env.observation[-1]][:3]
-        ending = self.env.step(action, refresh_frame=True)
-        after = self.env.get_player_state().copy()
-        after_pos = self.env.n2p[self.env.observation[-1]][:3]
-        reward_info = self._stage_reward_info(action, before, after, ending, before_phi)
-        base_reward = reward_info.components.get('env_step', 0.0) if reward_info else self._base_reward(before, after, ending)
-        reward = reward_info.total if reward_info else self._local_sword_reward_before_penalty(
-            action, base_reward, ending, before_pos, after_pos
-        )
-        done = ending != 'continue'
-
-        if reward_info is not None and reward_info.after.stage != reward_info.before.stage:
-            self._q_train_state['sword_collected'] = True
-            self._q_train_state['best_hp'] = max(self._q_train_state['best_hp'], self.env.player.hp)
-            self._log(
-                f'[Q Episode {self._q_train_state["episode"] + 1}] '
-                f'阶段推进 {reward_info.before.stage}->{reward_info.after.stage}，HP={self.env.player.hp}'
-            )
-        if reward_info is not None and reward_info.after.stage == 'done':
-            done = True
-
-        next_step_count = self._q_train_state['step_count'] + 1
-        timeout_penalty = 0.0
-        if not done and next_step_count >= self._q_train_state['max_steps']:
-            timeout_penalty = 500.0
-            reward -= timeout_penalty
-            ending = 'timeout'
-            done = True
-
-        next_actions = [] if done else self.env.get_feasible_actions()
-        next_state_key = None if done else agent.state_key(self.env)
-        next_action_keys = [agent.action_key(self.env, candidate) for candidate in next_actions]
-        td = agent.update(state_key, action_key, reward, next_state_key, next_action_keys, done)
-        self._q_train_state['last_td'] = td['td_error']
-
-        self._record_reward(
-            self._make_reward_row(
-                action,
-                before,
-                after,
-                ending,
-                before_pos,
-                after_pos,
-                source=f'Q训练/{mode}',
-                base_reward=base_reward,
-                total_reward=reward,
-                timeout_penalty=timeout_penalty,
-                reward_components={} if reward_info is None else reward_info.components,
-                stage_before=None if reward_info is None else reward_info.before.stage,
-                stage_after=None if reward_info is None else reward_info.after.stage,
-                phi_before=None if reward_info is None else reward_info.before.total,
-                phi_after=None if reward_info is None else reward_info.after.total,
-            )
-        )
-        self._refresh_state()
-        self._refresh_action_list()
-        self.update_idletasks()
-        self._q_train_state['step_count'] = next_step_count
-
-        if done:
-            self._q_episode_end(ending)
-        else:
-            self._q_after_id = self.after(self.train_speed_ms, self._q_step_loop)
-
-    def _q_episode_end(self, ending):
-        agent = self._get_q_agent(silent=True)
-        agent.episodes += 1
-        ep = self._q_train_state['episode'] + 1
-        self._log(
-            f'[Q Episode {ep}/{self._q_train_state["rounds"]}] '
-            f'steps={self._q_train_state["step_count"]} ending={ending} '
-            f'hp={self.env.player.hp} td={self._q_train_state["last_td"]:.2f}'
-        )
-        if ep % 20 == 0:
-            agent.save(self._q_train_state['save_path'])
-            self._log(f'[Q] 已保存中间 Q 表: {self._q_train_state["save_path"]}')
-        self.train_status.config(text=f'Q Episode {ep}/{self._q_train_state["rounds"]}')
-        self._q_train_state['episode'] = ep
-        self._q_after_id = self.after(self.train_speed_ms, self._q_episode_start)
-
-    def _q_train_finish(self):
-        if self._q_after_id:
-            self.after_cancel(self._q_after_id)
-            self._q_after_id = None
-        was_running = self.q_training
-        self.q_training = False
-        if hasattr(self, 'q_train_btn'):
-            self.q_train_btn.config(state='normal')
-        agent = self._get_q_agent(silent=True)
-        if agent is not None and hasattr(self, '_q_train_state'):
-            agent.save(self._q_train_state['save_path'])
-            if was_running:
-                self._log(f'[Q] 训练结束，Q 表已保存至: {self._q_train_state["save_path"]}')
-                if self._q_train_state['sword_collected']:
-                    self._log(f'[Q] 训练中曾拿到剑，最佳 HP={self._q_train_state["best_hp"]}')
-        self.train_status.config(text='Q-learning 训练结束', fg='gray')
-        self._refresh_action_list()
-
-    def _stop_q_training(self):
-        self.stop_training = True
-        if self._q_after_id:
-            self.after_cancel(self._q_after_id)
-            self._q_after_id = None
-        self.q_training = False
-        if hasattr(self, 'q_train_btn'):
-            self.q_train_btn.config(state='normal')
-        self._log('[Q] 已请求停止')
-        self.train_status.config(text='Q-learning 已停止', fg='red')
-
-    def _start_q_demo(self):
-        if self.training or self.q_training:
-            messagebox.showwarning('提示', '请先停止训练')
-            return
-        if not self._ensure_q_components():
-            return
-        path = Path(self.q_model_path_var.get())
-        if path.exists():
-            try:
-                self.q_agent = TabularQLearningAgent.load(path)
-                self._log(f'[Q演示] 已加载 Q 表: {path}')
-            except Exception as exc:
-                messagebox.showerror('Q 表加载失败', str(exc))
-                return
-        agent = self._get_q_agent()
-        if agent is None:
-            return
-        agent.epsilon = 0.0
-        self.mode_var.set('q')
-        self._switch_mode()
-        self.env.reset(refresh_frame=True)
-        self._reset_reward_monitor(note='Q 贪婪演示开始；动作表会显示当前 Q 值。')
-        self._refresh_state()
-        self._refresh_action_list()
-        self._q_demo_state = {'step_count': 0, 'max_steps': 180}
-        self.train_status.config(text='Q 贪婪演示中...', fg='blue')
-        self._q_demo_step()
-
-    def _q_demo_step(self):
-        agent = self._get_q_agent(silent=True)
-        actions = self.env.get_feasible_actions()
-        if not actions:
-            self._log('[Q演示] 无可行动作，演示结束')
-            self.train_status.config(text='Q 演示结束', fg='gray')
-            return
-        priors = self._action_prior_values(actions)
-        action, index = agent.greedy_action(self.env, actions, priors)
-        before = self.env.get_player_state().copy()
-        before_pos = self.env.n2p[self.env.observation[-1]][:3]
-        before_phi = stage_potential(self.env)
-        ending = self.env.step(action, refresh_frame=True)
-        after = self.env.get_player_state().copy()
-        after_pos = self.env.n2p[self.env.observation[-1]][:3]
-        reward_info = self._stage_reward_info(action, before, after, ending, before_phi)
-        base_reward = reward_info.components.get('env_step', 0.0) if reward_info else self._base_reward(before, after, ending)
-        reward = reward_info.total if reward_info else self._local_sword_reward_before_penalty(
-            action, base_reward, ending, before_pos, after_pos
-        )
-        self._record_reward(
-            self._make_reward_row(
-                action,
-                before,
-                after,
-                ending,
-                before_pos,
-                after_pos,
-                source='Q演示',
-                base_reward=base_reward,
-                total_reward=reward,
-                reward_components={} if reward_info is None else reward_info.components,
-                stage_before=None if reward_info is None else reward_info.before.stage,
-                stage_after=None if reward_info is None else reward_info.after.stage,
-                phi_before=None if reward_info is None else reward_info.before.total,
-                phi_after=None if reward_info is None else reward_info.after.total,
-            )
-        )
-        self._q_demo_state['step_count'] += 1
-        self._refresh_state()
-        self._refresh_action_list()
-        self.update_idletasks()
-        if reward_info is not None and reward_info.after.stage == 'done':
-            self._log(f'[Q演示] 击败队长/完成目标，HP={self.env.player.hp}')
-            self.train_status.config(text='Q 演示结束（完成）', fg='green')
-            return
-        if ending != 'continue' or self._q_demo_state['step_count'] >= self._q_demo_state['max_steps']:
-            self._log(f'[Q演示] 结束: {ending} steps={self._q_demo_state["step_count"]} hp={self.env.player.hp}')
-            self.train_status.config(text='Q 演示结束', fg='gray')
-            return
-        self._q_after_id = self.after(self.train_speed_ms, self._q_demo_step)
-
-    # ------------------------------------------------------------------------
-    #  PPO 训练 - 生成器模式，支持动态演示
-    # ------------------------------------------------------------------------
-    def _start_train_generator(self):
-        if self.training or self.q_training:
-            messagebox.showwarning('提示', '训练正在进行中')
-            return
-        if not self._ensure_rl_components():
-            return
-        try:
-            rounds = int(self.rounds_var.get())
-        except ValueError:
-            messagebox.showerror('错误', '回合数必须是整数')
-            return
-        if rounds <= 0:
-            return
-
-        save_path = self.model_path_var.get()
-        gnn_encoder = MapGNNEncoder(output_dim=64, hidden_dim=128, num_layers=3)
-        self.agent = PPO(emb_map_dim=64, emb_state_dim=32, emb_action_dim=32, gnn_encoder=gnn_encoder)
-        if os.path.exists(save_path):
-            try:
-                self.agent.load(save_path)
-                self._log(f'[训练] 已加载模型: {save_path}')
-            except Exception as e:
-                self._log(f'[训练] 加载模型失败: {e}')
-
-        self.training = True
-        self.stop_training = False
-        self.train_btn.config(state='disabled')
-        self.train_status.config(text='训练中...', fg='green')
-        self._log(f'[训练] 开始 {rounds} 回合训练，速度间隔 {self.train_speed_ms}ms')
-
-        # 训练状态
-        self._train_state = {
-            'rounds': rounds,
-            'episode': 0,
-            'step_count': 0,
-            'max_steps': 180,
-            'sword_collected': False,
-            'best_hp': 0,
-            'save_path': save_path,
-        }
-        self._train_episode_start()
-
-    def _train_episode_start(self):
-        if self.stop_training or self._train_state['episode'] >= self._train_state['rounds']:
-            self._train_finish()
-            return
-        self.env.reset(refresh_frame=True)
-        self._reset_reward_monitor(note=f'训练 Episode {self._train_state["episode"] + 1} 开始；reward 从 0 重新累计。')
-        self._refresh_state()
-        self._train_state['step_count'] = 0
-        self._train_recent_positions = [self.env.n2p[self.env.observation[-1]][:3]]
-        self._train_last_action_was_stair = False
-        self._train_step_loop()
-
-    def _train_step_loop(self):
-        if self.stop_training:
-            self._train_finish()
-            return
-
-        actions = self.env.get_feasible_actions()
-        actions = self._filter_train_stair_loops(actions)
-        if not actions:
-            self._train_episode_end('stop')
-            return
-
-        action, info = self.agent.choose_action(self.env, actions)
-        before = self.env.get_player_state()
-        before_pos = self.env.n2p[self.env.observation[-1]][:3]
-
-        # 执行动作并刷新画面（动态演示核心）
-        ending = self.env.step(action, refresh_frame=True)
-        after_pos = self.env.n2p[self.env.observation[-1]][:3]
-        action_pos = self.env.n2p.get(action)
-        was_stair = bool(action_pos is not None and getattr(action, 'id', '') in {'upFloor', 'downFloor'})
-        self._refresh_state()
-        self.update_idletasks()
-
-        after = self.env.get_player_state()
-        if ending == 'stop':
-            base_reward = -9999.0
-        else:
-            base_reward = float(np.sum((after - before) * PPO_REWARD_RATE))
-        reward = compute_sword_reward(self.env, base_reward, ending, action)
-        stair_penalty = 0.0
-        done = (ending != 'continue')
-
-        # 拿到剑
-        if self.env.n2p[action] == (4, 11, 11):
-            self._train_state['sword_collected'] = True
-            done = True
-            if self.env.player.hp > self._train_state['best_hp']:
-                self._train_state['best_hp'] = self.env.player.hp
-            self._log(f'[Episode {self._train_state["episode"] + 1}] 拿到剑！生命: {self.env.player.hp}')
-
-        next_step_count = self._train_state['step_count'] + 1
-        timeout_penalty = 0.0
-        if not done and next_step_count >= self._train_state.get('max_steps', 180):
-            timeout_penalty = 500.0
-            reward -= timeout_penalty
-            done = True
-            ending = 'timeout'
-
-        self._record_reward(
-            self._make_reward_row(
-                action,
-                before,
-                after,
-                ending,
-                before_pos,
-                after_pos,
-                source='训练',
-                base_reward=base_reward,
-                total_reward=reward,
-                stair_penalty=stair_penalty,
-                timeout_penalty=timeout_penalty,
-            )
-        )
-
-        self.agent.store_transition(info, reward, done)
-        self._train_state['step_count'] = next_step_count
-        self._train_last_action_was_stair = was_stair
-        self._train_recent_positions.append(after_pos)
-        self._train_recent_positions = self._train_recent_positions[-10:]
-
-        if done:
-            self._train_episode_end(ending)
-        else:
-            # 继续下一步，延迟由速度滑块控制
-            self._train_after_id = self.after(self.train_speed_ms, self._train_step_loop)
-
-    def _train_episode_end(self, ending):
-        updated = self.agent.end_episode()
-        ep = self._train_state['episode'] + 1
-        status = 'UPDATED' if updated else f'hp={self.env.player.hp}'
-        self._log(f'[Episode {ep}/{self._train_state["rounds"]}] {status} '
-                  f'steps={self._train_state["step_count"]} ending={ending}')
-        self.train_status.config(text=f'Episode {ep}/{self._train_state["rounds"]}')
-
-        self._train_state['episode'] = ep
-        self._train_after_id = self.after(self.train_speed_ms, self._train_episode_start)
-
-    def _train_finish(self):
-        self.training = False
-        self.train_btn.config(state='normal')
-        if self.agent:
-            self.agent.update()
-            path = self._train_state['save_path']
-            os.makedirs(os.path.dirname(path) or '.', exist_ok=True)
-            self.agent.save(path)
-            self._log(f'[训练] 完成，模型已保存至: {path}')
-            if self._train_state['sword_collected']:
-                self._log(f'[训练] 成功拿到剑！最佳生命: {self._train_state["best_hp"]}')
-            else:
-                self._log('[训练] 未拿到剑，建议增加回合数')
-        self.train_status.config(text='训练结束', fg='gray')
-
-    def _stop_training(self):
-        self.stop_training = True
-        if self._train_after_id:
-            self.after_cancel(self._train_after_id)
-            self._train_after_id = None
-        self._log('[训练] 已请求停止')
-        self.train_status.config(text='已停止', fg='red')
-        self.train_btn.config(state='normal')
-        self.training = False
-
-    # ------------------------------------------------------------------------
-    #  贪婪演示 - 同样使用 after 动态演示
-    # ------------------------------------------------------------------------
-    def _start_demo(self):
-        if self.training or self.q_training:
-            messagebox.showwarning('提示', '请先停止训练')
-            return
-        if not self._ensure_rl_components():
-            return
-        save_path = self.model_path_var.get()
-        if not os.path.exists(save_path):
-            messagebox.showwarning('提示', f'模型不存在: {save_path}')
-            return
-        self.mode_var.set('demo')
-        self._switch_mode()
-
-        gnn_encoder = MapGNNEncoder(output_dim=64, hidden_dim=128, num_layers=3)
-        agent = PPO(emb_map_dim=64, emb_state_dim=32, emb_action_dim=32, gnn_encoder=gnn_encoder)
-        agent.load(save_path)
-        self.env.reset(refresh_frame=True)
-        self._reset_reward_monitor(note='贪婪演示开始；显示模型每一步对应的当前 reward。')
-        self._refresh_state()
-        self._log('[演示] 开始贪婪策略演示')
-        self.train_status.config(text='演示中...', fg='blue')
-        self._demo_agent = agent
-        self._demo_recent_positions = [self.env.n2p[self.env.observation[-1]][:3]]
-        self._demo_last_action_was_stair = False
-        self._demo_step()
-
-    def _demo_step(self):
-        actions = self.env.get_feasible_actions()
-        actions = self._filter_demo_stair_loops(actions)
-        if not actions:
-            self._log('[演示] 无可行动作，演示结束')
-            self.train_status.config(text='演示结束', fg='gray')
-            return
-        action = self._demo_agent.greedy_action(self.env, actions)
-        before = self.env.get_player_state().copy()
-        before_pos = self.env.n2p[self.env.observation[-1]][:3]
-        ending = self.env.step(action, refresh_frame=True)
-        after = self.env.get_player_state().copy()
-        after_pos = self.env.n2p[self.env.observation[-1]][:3]
-        base_reward = self._base_reward(before, after, ending)
-        reward = self._local_sword_reward_before_penalty(action, base_reward, ending, before_pos, after_pos)
-        self._record_reward(
-            self._make_reward_row(
-                action,
-                before,
-                after,
-                ending,
-                before_pos,
-                after_pos,
-                source='演示',
-                base_reward=base_reward,
-                total_reward=reward,
-            )
-        )
-        action_pos = self.env.n2p.get(action)
-        self._demo_last_action_was_stair = bool(
-            action_pos is not None and getattr(action, 'id', '') in {'upFloor', 'downFloor'}
-        )
-        self._demo_recent_positions.append(self.env.n2p[self.env.observation[-1]][:3])
-        self._demo_recent_positions = self._demo_recent_positions[-8:]
-        self._refresh_state()
-        self.update_idletasks()
-
-        if self.env.n2p[action] == (4, 11, 11):
-            self._log(f'[演示] 成功拿到剑！生命: {self.env.player.hp}')
-            self.train_status.config(text='演示结束（拿到剑）', fg='green')
-            return
-        if ending != 'continue':
-            self._log(f'[演示] 结束: {ending} 生命: {self.env.player.hp}')
-            self.train_status.config(text=f'演示结束 ({ending})', fg='gray')
-            return
-        self._train_after_id = self.after(self.train_speed_ms, self._demo_step)
-
-    def _filter_demo_stair_loops(self, actions):
-        """Avoid the common greedy-policy 2F/3F stair bounce during demos."""
-        return self._filter_stair_loop_actions(
-            actions,
-            recent_positions=getattr(self, '_demo_recent_positions', []),
-            last_action_was_stair=getattr(self, '_demo_last_action_was_stair', False),
-            label='演示',
-        )
-
-    def _filter_train_stair_loops(self, actions):
-        return self._filter_stair_loop_actions(
-            actions,
-            recent_positions=getattr(self, '_train_recent_positions', []),
-            last_action_was_stair=getattr(self, '_train_last_action_was_stair', False),
-            label='训练',
-        )
-
-    def _filter_stair_loop_actions(self, actions, recent_positions, last_action_was_stair, label):
-        if not actions or not self.env or not self.env.observation:
-            return actions
-        current_pos = self.env.n2p[self.env.observation[-1]][:3]
-        recent = set((recent_positions or [])[-6:])
-
-        def is_stair(action):
-            return getattr(action, 'id', '') in {'upFloor', 'downFloor'}
-
-        def action_pos(action):
-            pos = self.env.n2p.get(action)
-            return None if pos is None else pos[:3]
-
-        filtered = []
-        skipped = []
-        for action in actions:
-            pos = action_pos(action)
-            loop_like = False
-            if pos is not None and is_stair(action):
-                # After arriving at a paired stair, the reverse action is usually
-                # the current node itself. If there are other choices, do not let
-                # the policy immediately undo the previous floor transition.
-                if last_action_was_stair and pos == current_pos:
-                    loop_like = True
-                elif pos in recent and len(recent) >= 2:
-                    loop_like = True
-            if loop_like:
-                skipped.append(action)
-            else:
-                filtered.append(action)
-        if filtered and skipped:
-            self._set_status(f'[{label}] 已临时过滤 {len(skipped)} 个楼梯回环动作，避免反复上下楼。')
-            return filtered
-        return actions
-
-    def _train_stair_loop_reward_penalty(self, action, before_pos, after_pos):
-        # Kept for compatibility with old logs. Stair loops are now handled as
-        # action filtering/masking, not reward shaping.
-        return 0.0
 
     def _show_story_messages(self, messages):
         if not messages:

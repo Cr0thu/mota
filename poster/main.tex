@@ -408,33 +408,34 @@
 
   % Bottom conclusion panel.
   \placeblock{1.10in}{31.20in}{21.80in}{%
-    {\fontsize{27}{33}\selectfont\bfseries\color{white}Takeaways and released artifacts}\\[-0.01in]
+    {\fontsize{27}{33}\selectfont\bfseries\color{white}Main conclusions}\\[-0.01in]
     {\color{accent}\rule{\linewidth}{1.0pt}}\\[0.20in]
     \begin{minipage}[t]{0.33\linewidth}
-      {\fontsize{21}{26}\selectfont\bfseries\color{white}Exactness first}\\[0.07in]
+      {\fontsize{21}{26}\selectfont\bfseries\color{white}Verified objective}\\[0.07in]
       {\fontsize{16.2}{22.8}\selectfont\color{white!84}
-      All reported routes are checked by deterministic replay, so terminal HP, key
-      balances, defeated enemies, and event flags are auditable rather than inferred
-      from model score.}
+      Success is defined only by exact replay of the game transition log.  The final
+      state must trigger the terminal event and retain positive HP; shaped return and
+      model confidence are diagnostic signals only.}
     \end{minipage}\hfill
     \begin{minipage}[t]{0.33\linewidth}
-      {\fontsize{21}{26}\selectfont\bfseries\color{white}Learning as guidance}\\[0.07in]
+      {\fontsize{21}{26}\selectfont\bfseries\color{white}Search signal}\\[0.07in]
       {\fontsize{16.2}{22.8}\selectfont\color{white!84}
-      The potential model supplies dense progress information for PUCT and archive
-      priority; the terminal objective remains strict replay success with positive HP.}
+      Potential learning converts ordered successful states into a dense progress
+      signal.  PUCT and archive search use this signal to prioritize promising
+      resource states without changing the task objective.}
     \end{minipage}\hfill
     \begin{minipage}[t]{0.29\linewidth}
-      {\fontsize{21}{26}\selectfont\bfseries\color{white}Benchmark trajectory}\\[0.07in]
+      {\fontsize{21}{26}\selectfont\bfseries\color{white}Benchmark use}\\[0.07in]
       {\fontsize{16.2}{22.8}\selectfont\color{white!84}
-      The same environment supports symbolic agents, language-conditioned agents,
-      and video-based agents over a shared replayable action interface.}
+      The same simulator can expose symbolic states, natural-language descriptions,
+      and rendered videos, enabling a common benchmark for planners and multimodal
+      agents.}
     \end{minipage}\\[0.28in]
     {\color{white!28}\rule{\linewidth}{0.55pt}}\\[0.17in]
     {\fontsize{16.5}{23.0}\selectfont\color{white!88}
-    \textbf{Transition log schema:}\quad
-    checksum \(\rightarrow\) action mask \(\rightarrow\) interaction node
-    \(\rightarrow\) combat/key/event update \(\rightarrow\) potential factors
-    \(\rightarrow\) strict replay verdict.}\\[0.28in]
+    \textbf{Experimental pipeline:}\quad
+    simulator \(\rightarrow\) graph action interface \(\rightarrow\) potential model
+    \(\rightarrow\) PUCT/archive search \(\rightarrow\) strict route replay.}\\[0.28in]
     \begin{minipage}[t]{0.19\linewidth}
       {\fontsize{18.8}{23.0}\selectfont\bfseries\color{white}Simulator}\\[0.01in]
       {\fontsize{14.4}{19.4}\selectfont\color{white!66}deterministic rules}
@@ -456,17 +457,16 @@
       {\fontsize{14.4}{19.4}\selectfont\color{white!66}text-video replay}
     \end{minipage}\\[0.28in]
     {\fontsize{15.2}{21.0}\selectfont\color{white!78}
-    \textbf{Artifacts:} simulator, macro-action environment, graph-state encoder,
-    potential training logs, archive cells, trajectory logs, failure cases, route
-    visualizer, and report figures.}
+    \textbf{Released components:} deterministic simulator, macro-action environment,
+    graph-state encoder, potential training logs, archive cells, trajectory logs,
+    failure cases, route visualizer, report source, and poster source.}
   }
 
   \node[anchor=south west,text width=21.80in,align=left]
     at ([xshift=1.10in,yshift=1.55in]current page.south west) {%
     {\fontsize{21.5}{27.0}\selectfont\bfseries\color{white}
-    Central claim: exact symbolic replay gives a hard success criterion, while
-    potential-guided PUCT and archive search provide scalable guidance for long-horizon
-    resource planning.}};
+    Core message: learning is most useful as guidance for exact search; the final
+    claim is always certified by deterministic replay.}};
 
 \end{tikzpicture}
 \end{document}

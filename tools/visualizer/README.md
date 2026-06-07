@@ -17,8 +17,8 @@ environment it can find. On this machine the preferred environment is:
 /Users/cr0/anaconda3/envs/Cr0/bin/python
 ```
 
-That environment has `torch`, `tkinter`, `Pillow`, and `pandas`, so both manual
-visualization and PPO demo/training code can be loaded.
+That environment has `tkinter`, `Pillow`, and `pandas`, which are sufficient for
+manual visualization, route playback, and reward inspection.
 
 Manual mode supports:
 
@@ -83,22 +83,12 @@ You can force a specific virtual environment with:
 MOTA_VISUALIZER_PYTHON=/path/to/python tools/visualizer/run_visualizer.command
 ```
 
-## PPO Training / Demo
-
-The PPO buttons in the UI require `torch` and the local model file. The CLI
-training path is:
-
-```bash
-python tools/visualizer/train.py --rounds 1000 --save model/ppo_10floor.pth
-python tools/visualizer/train.py --demo --save model/ppo_10floor.pth
-```
-
-The uploaded model is kept locally at `tools/visualizer/model/ppo_10floor.pth`,
-but `*.pth` is ignored by git in this repository.
-
 ## Notes
 
 - `run_this.py` changes the process working directory to this folder so that
-  image assets under `pictures/` and model paths resolve correctly.
-- This visualizer currently optimizes and demonstrates the 5F sword objective,
-  not the final first-10-floor skeleton-captain objective.
+  image assets under `pictures/` resolve correctly.
+- This visualizer is now play/replay only. Old local learning demos, model
+  checkpoints, and cache files have been removed from this folder.
+- The older `mota-with-window` directory was moved into
+  `tools/mota_with_window_legacy/` and kept as a lightweight manual window for
+  reproduction.

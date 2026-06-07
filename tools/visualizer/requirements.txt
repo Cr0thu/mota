@@ -5,6 +5,3 @@ matplotlib>=3.5
 psutil>=5.9
 joblib>=1.2
 scikit-learn>=1.0
-
-# Needed only for PPO training/demo.
-torch>=2.1
